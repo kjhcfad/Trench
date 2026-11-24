@@ -1,208 +1,375 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trench · The GCSE Dive</title>
+
 <style>
-  :root {
-    --bg-deep: #040d1a;
-    --bg-mid: #081c36;
-    --bg-surface: #0e2c52;
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.25);
-    --success: #2ecc71;
-    --danger: #e74c3c;
-    --warning: #f1c40f;
-    --text-main: #eaf4fc;
-    --text-muted: #8fb3d9;
-    --card-bg: rgba(14, 44, 82, 0.72);
-    --border: rgba(0, 210, 255, 0.2);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(180deg, #0b3954 0%, #061a30 45%, #020813 100%);
-    color: var(--text-main);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-  }
-  header {
-    padding: 1.25rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    background: rgba(4, 13, 26, 0.85);
-    backdrop-filter: blur(8px);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .brand { display: flex; align-items: center; gap: 0.75rem; }
-  .brand h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.5px; color: var(--accent); }
-  .brand span { font-size: 0.85rem; color: var(--text-muted); }
-  nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  nav button {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    padding: 0.45rem 0.9rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-  }
-  nav button:hover, nav button.active {
-    background: var(--accent);
-    color: #020813;
-    font-weight: 600;
-  }
-  main {
-    flex: 1;
-    max-width: 900px;
-    width: 100%;
-    margin: 2rem auto;
-    padding: 0 1.25rem;
-  }
-  .panel {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.75rem;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-    backdrop-filter: blur(10px);
-    margin-bottom: 1.5rem;
-  }
-  .hidden { display: none !important; }
-  h2 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent); }
-  p { line-height: 1.6; color: var(--text-muted); margin-bottom: 1rem; }
+:root {
+  --bg-deep: #040d1a;
+  --bg-mid: #081c36;
+  --accent: #00d2ff;
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f1c40f;
+  --text-main: #eaf4fc;
+  --text-muted: #8fb3d9;
+  --card-bg: rgba(14,44,82,.72);
+  --border: rgba(0,210,255,.2);
+}
 
-  /* Depth Gauge */
-  .dive-hud {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(2, 8, 19, 0.6);
-    padding: 0.85rem 1.25rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    border: 1px solid var(--border);
-  }
-  .hud-stat { text-align: center; }
-  .hud-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
-  .hud-val { font-size: 1.25rem; font-weight: 700; color: var(--accent); }
+* { box-sizing:border-box; margin:0; padding:0; }
 
-  /* Question UI */
-  .q-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
-  .badge {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    background: rgba(0, 210, 255, 0.14);
-    border: 1px solid var(--border);
-    color: var(--accent);
-  }
-  .q-text { font-size: 1.25rem; font-weight: 600; color: #fff; margin-bottom: 1.25rem; line-height: 1.45; }
-  .options-grid { display: grid; gap: 0.75rem; margin-bottom: 1.25rem; }
-  .opt-btn {
-    text-align: left;
-    padding: 0.9rem 1.1rem;
-    background: rgba(8, 28, 54, 0.9);
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .opt-btn:hover { border-color: var(--accent); background: rgba(0, 210, 255, 0.12); }
-  .opt-btn.selected { border-color: var(--accent); background: rgba(0, 210, 255, 0.22); }
-  .opt-btn.correct { border-color: var(--success); background: rgba(46, 204, 113, 0.2); }
-  .opt-btn.wrong { border-color: var(--danger); background: rgba(231, 76, 60, 0.2); }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:linear-gradient(180deg,#0b3954 0%,#061a30 45%,#020813 100%);
+  color:var(--text-main);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
+  transition:background 1.2s ease;
+}
 
-  input[type="text"], textarea, select {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: rgba(2, 8, 19, 0.75);
-    color: #fff;
-    font-size: 1rem;
-    font-family: inherit;
-    margin-bottom: 1rem;
-  }
-  input[type="text"]:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #020813;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: transform 0.1s, opacity 0.2s;
-  }
-  .btn-primary:hover { opacity: 0.92; }
-  .btn-secondary {
-    background: transparent;
-    color: var(--text-main);
-    border: 1px solid var(--border);
-    padding: 0.7rem 1.25rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-  .feedback-box {
-    margin-top: 1.25rem;
-    padding: 1rem 1.25rem;
-    border-radius: 8px;
-    border-left: 4px solid var(--accent);
-    background: rgba(2, 8, 19, 0.65);
-  }
-  .feedback-box.ok { border-left-color: var(--success); }
-  .feedback-box.bad { border-left-color: var(--danger); }
+header {
+  padding:1.25rem 2rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  flex-wrap:wrap;
+  border-bottom:1px solid var(--border);
+  background:rgba(4,13,26,.85);
+  backdrop-filter:blur(8px);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
 
-  /* Library Cards */
-  .bank-list { display: grid; gap: 1rem; }
-  .bank-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.25rem;
-    background: rgba(2, 8, 19, 0.55);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .bank-info h3 { font-size: 1.05rem; margin-bottom: 0.25rem; color: #fff; }
-  .bank-info small { color: var(--text-muted); }
+.brand { display:flex; align-items:center; gap:.75rem; }
+.brand h1 { font-size:1.35rem; color:var(--accent); }
+.brand span { font-size:.85rem; color:var(--text-muted); }
 
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
-  .stat-card {
-    background: rgba(2, 8, 19, 0.55);
-    border: 1px solid var(--border);
-    padding: 1.25rem;
-    border-radius: 8px;
-    text-align: center;
+nav { display:flex; gap:.5rem; flex-wrap:wrap; }
+
+nav button {
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text-main);
+  padding:.45rem .9rem;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:.9rem;
+  transition:all .2s;
+}
+
+nav button:hover, nav button.active {
+  background:var(--accent);
+  color:#020813;
+  font-weight:600;
+}
+
+main {
+  flex:1;
+  max-width:900px;
+  width:100%;
+  margin:2rem auto;
+  padding:0 1.25rem;
+}
+
+.panel {
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1.75rem;
+  box-shadow:0 12px 32px rgba(0,0,0,.45);
+  backdrop-filter:blur(10px);
+  margin-bottom:1.5rem;
+}
+
+.hidden { display:none !important; }
+
+h2 { font-size:1.3rem; margin-bottom:1rem; color:var(--accent); }
+p { line-height:1.6; color:var(--text-muted); margin-bottom:1rem; }
+
+.dive-hud {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:.5rem;
+  background:rgba(2,8,19,.6);
+  padding:.85rem 1.25rem;
+  border-radius:8px;
+  margin-bottom:1.5rem;
+  border:1px solid var(--border);
+}
+
+.hud-stat { text-align:center; }
+.hud-label {
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--text-muted);
+}
+.hud-val { font-size:1.25rem; font-weight:700; color:var(--accent); }
+
+.q-meta { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.85rem; }
+
+.badge {
+  font-size:.75rem;
+  padding:.2rem .6rem;
+  border-radius:999px;
+  background:rgba(0,210,255,.14);
+  border:1px solid var(--border);
+  color:var(--accent);
+}
+
+.q-text {
+  font-size:1.25rem;
+  font-weight:600;
+  color:#fff;
+  margin-bottom:1.25rem;
+  line-height:1.45;
+}
+
+.options-grid { display:grid; gap:.75rem; margin-bottom:1.25rem; }
+
+.opt-btn {
+  text-align:left;
+  padding:.9rem 1.1rem;
+  background:rgba(8,28,54,.9);
+  border:1px solid var(--border);
+  color:var(--text-main);
+  border-radius:8px;
+  font-size:1rem;
+  cursor:pointer;
+  transition:all .15s;
+}
+
+.opt-btn:hover { border-color:var(--accent); background:rgba(0,210,255,.12); }
+.opt-btn.selected { border-color:var(--accent); background:rgba(0,210,255,.22); }
+.opt-btn.correct { border-color:var(--success); background:rgba(46,204,113,.2); }
+.opt-btn.wrong { border-color:var(--danger); background:rgba(231,76,60,.2); }
+
+input[type="text"], textarea, select {
+  width:100%;
+  padding:.85rem 1rem;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:rgba(2,8,19,.75);
+  color:#fff;
+  font-size:1rem;
+  font-family:inherit;
+  margin-bottom:1rem;
+}
+
+input[type="file"] { color:var(--text-muted); }
+
+input:focus, textarea:focus, select:focus {
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,210,255,.15);
+}
+
+.btn-primary {
+  background:var(--accent);
+  color:#020813;
+  border:none;
+  padding:.75rem 1.5rem;
+  border-radius:8px;
+  font-weight:700;
+  font-size:.95rem;
+  cursor:pointer;
+  transition:transform .1s,opacity .2s;
+}
+
+.btn-primary:hover { opacity:.92; }
+
+.btn-secondary {
+  background:transparent;
+  color:var(--text-main);
+  border:1px solid var(--border);
+  padding:.7rem 1.25rem;
+  border-radius:8px;
+  font-size:.9rem;
+  cursor:pointer;
+}
+
+.feedback-box {
+  margin-top:1.25rem;
+  padding:1rem 1.25rem;
+  border-radius:8px;
+  border-left:4px solid var(--accent);
+  background:rgba(2,8,19,.65);
+  line-height:1.6;
+}
+
+.feedback-box.ok { border-left-color:var(--success); }
+.feedback-box.bad { border-left-color:var(--danger); }
+
+.bank-list { display:grid; gap:1rem; }
+
+.bank-card {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1rem 1.25rem;
+  background:rgba(2,8,19,.55);
+  border:1px solid var(--border);
+  border-radius:8px;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+
+.bank-info h3 { font-size:1.05rem; margin-bottom:.25rem; color:#fff; }
+.bank-info small { color:var(--text-muted); }
+
+.stats-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1rem;
+}
+
+.stat-card {
+  background:rgba(2,8,19,.55);
+  border:1px solid var(--border);
+  padding:1.25rem;
+  border-radius:8px;
+  text-align:center;
+}
+
+.stat-card .num { font-size:2rem; font-weight:700; color:var(--accent); }
+
+/* UNDERWATER DESCENT GAUGE */
+
+#descent {
+  position:fixed;
+  z-index:5;
+  top:125px;
+  right:18px;
+  bottom:25px;
+  width:100px;
+  color:#e7f5fa;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .6s ease;
+}
+
+body.diving #descent { opacity:1; }
+
+.depth-heading {
+  font-size:10px;
+  letter-spacing:3px;
+  text-align:center;
+  opacity:.65;
+}
+
+#depth-label {
+  font-size:19px;
+  font-weight:800;
+  text-align:center;
+  margin-top:5px;
+  font-variant-numeric:tabular-nums;
+}
+
+.depth-track {
+  position:absolute;
+  top:65px;
+  bottom:42px;
+  left:0;
+  right:0;
+}
+
+.depth-rail {
+  position:absolute;
+  top:8px;
+  bottom:8px;
+  left:50px;
+  width:3px;
+  border-radius:5px;
+  background:linear-gradient(
+    to bottom,
+    rgba(180,230,255,.8),
+    rgba(80,160,190,.5),
+    rgba(10,30,65,.9)
+  );
+  box-shadow:0 0 12px rgba(100,200,255,.3);
+}
+
+.depth-tick {
+  position:absolute;
+  left:61px;
+  font-size:9px;
+  opacity:.6;
+  transform:translateY(-50%);
+  white-space:nowrap;
+}
+
+.tick-0 { top:8px; }
+.tick-250 { top:25%; }
+.tick-500 { top:50%; }
+.tick-750 { top:75%; }
+.tick-1000 { top:calc(100% - 8px); }
+
+#diver {
+  position:absolute;
+  left:29px;
+  top:8px;
+  transform:translateY(-50%);
+  transition:top 1.2s cubic-bezier(.2,.8,.2,1);
+  filter:drop-shadow(0 0 9px rgba(140,220,255,.8));
+  animation:diverSwim 2.5s ease-in-out infinite;
+}
+
+@keyframes diverSwim {
+  0%,100% { margin-left:0; rotate:-4deg; }
+  50% { margin-left:5px; rotate:4deg; }
+}
+
+.depth-caption {
+  position:absolute;
+  bottom:0;
+  width:100%;
+  text-align:center;
+  font-size:8px;
+  letter-spacing:2px;
+  opacity:.5;
+}
+
+@media(max-width:700px) {
+  header { padding:1rem; }
+  main { padding:0 1rem; }
+  .panel { padding:1.2rem; }
+  #descent {
+    right:3px;
+    width:65px;
+    transform:scale(.8);
+    transform-origin:top right;
   }
-  .stat-card .num { font-size: 2rem; font-weight: 700; color: var(--accent); }
+  #diver { left:17px; }
+  .depth-rail { left:38px; }
+  .depth-tick { left:44px; font-size:8px; }
+}
+
+@media(max-width:480px) {
+  .dive-hud { padding:.7rem .4rem; }
+  .hud-val { font-size:1rem; }
+  .hud-label { font-size:.6rem; }
+  nav button { font-size:.8rem; padding:.4rem .6rem; }
+}
 </style>
 </head>
+
 <body>
+
 <header>
   <div class="brand">
     <h1>TRENCH</h1>
     <span>· the GCSE dive</span>
   </div>
+
   <nav>
     <button id="nav-dive" class="active" onclick="showTab('dive')">Dive</button>
     <button id="nav-library" onclick="showTab('library')">Question Library</button>
@@ -212,17 +379,21 @@
 </header>
 
 <main>
+
   <!-- DIVE TAB -->
   <section id="tab-dive" class="panel">
+
     <div class="dive-hud">
       <div class="hud-stat">
         <div class="hud-label">Current Depth</div>
         <div class="hud-val" id="hud-depth">0m</div>
       </div>
+
       <div class="hud-stat">
         <div class="hud-label">Streak</div>
         <div class="hud-val" id="hud-streak">0</div>
       </div>
+
       <div class="hud-stat">
         <div class="hud-label">Question</div>
         <div class="hud-val" id="hud-progress">0 / 0</div>
@@ -240,10 +411,12 @@
       <div class="q-meta" id="q-meta"></div>
       <div class="q-text" id="q-text"></div>
       <div id="q-input-area"></div>
-      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
         <button class="btn-primary" id="btn-submit" onclick="submitAnswer()">Check Answer</button>
         <button class="btn-secondary hidden" id="btn-next" onclick="nextQuestion()">Descend Deeper →</button>
       </div>
+
       <div id="feedback-area" class="feedback-box hidden"></div>
     </div>
 
@@ -252,13 +425,14 @@
       <p id="dive-summary"></p>
       <button class="btn-primary" onclick="resetDive()">Surface & Choose Another Bank</button>
     </div>
+
   </section>
 
   <!-- LIBRARY TAB -->
   <section id="tab-library" class="panel hidden">
     <h2>Question Bank Library</h2>
     <p>Shared repository question banks and locally saved custom banks.</p>
-    <div id="library-status" style="margin-bottom:1rem; font-size:0.9rem; color:var(--warning);"></div>
+    <div id="library-status" style="margin-bottom:1rem;font-size:.9rem;color:var(--warning);"></div>
     <div class="bank-list" id="bank-list"></div>
   </section>
 
@@ -266,8 +440,9 @@
   <section id="tab-import" class="panel hidden">
     <h2>Import Question Bank (CSV)</h2>
     <p>Upload a CSV file or paste CSV content matching the Trench schema. Custom banks are saved locally in your browser.</p>
+
     <input type="text" id="import-name" placeholder="Bank Name (e.g. Biology Cell Structure)">
-    <input type="file" id="import-file" accept=".csv" style="margin-bottom:1rem; color:var(--text-muted);">
+    <input type="file" id="import-file" accept=".csv">
     <textarea id="import-csv" rows="7" placeholder='"question","type","options","answer","model_answer","explanation","subject","exam_board","specification","topic","subtopic","difficulty","marks"'></textarea>
     <button class="btn-primary" onclick="importCSV()">Save Bank Locally</button>
   </section>
@@ -276,29 +451,70 @@
   <section id="tab-stats" class="panel hidden">
     <h2>Revision Statistics</h2>
     <p>Stored locally in your browser.</p>
+
     <div class="stats-grid">
       <div class="stat-card">
         <div class="num" id="stat-answered">0</div>
         <div class="hud-label">Questions Answered</div>
       </div>
+
       <div class="stat-card">
         <div class="num" id="stat-correct">0</div>
         <div class="hud-label">Correct Answers</div>
       </div>
+
       <div class="stat-card">
         <div class="num" id="stat-accuracy">0%</div>
         <div class="hud-label">Accuracy</div>
       </div>
+
       <div class="stat-card">
         <div class="num" id="stat-max-depth">0m</div>
         <div class="hud-label">Deepest Dive</div>
       </div>
     </div>
+
     <div style="margin-top:1.5rem;">
       <button class="btn-secondary" onclick="clearStats()">Reset Local Stats</button>
     </div>
   </section>
+
 </main>
+
+<!-- DIVER AND DEPTH GAUGE -->
+<aside id="descent" aria-label="Your underwater depth">
+  <div class="depth-heading">DEPTH</div>
+  <div id="depth-label">0 M</div>
+
+  <div class="depth-track">
+    <div class="depth-rail"></div>
+
+    <div class="depth-tick tick-0">0m</div>
+    <div class="depth-tick tick-250">250m</div>
+    <div class="depth-tick tick-500">500m</div>
+    <div class="depth-tick tick-750">750m</div>
+    <div class="depth-tick tick-1000">1000m</div>
+
+    <div id="diver">
+      <svg viewBox="0 0 64 64" width="42" height="42">
+        <g fill="none" stroke="currentColor" stroke-width="3"
+           stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="34" cy="15" r="9" fill="#f0c987"/>
+          <path d="M25 14 Q34 2 43 14" fill="#d8e8ef"/>
+          <path d="M25 27 L42 27 L47 43 L29 45" fill="#e76d4d"/>
+          <path d="M29 43 L20 54 L29 57 L37 45"/>
+          <path d="M42 43 L51 51 L57 47 L47 38"/>
+          <path d="M27 30 L15 38 L19 43 L32 36"/>
+          <path d="M43 30 L54 34 L52 39 L41 36"/>
+          <path d="M32 45 L31 57 M43 44 L47 57"/>
+        </g>
+        <circle cx="34" cy="15" r="4" fill="#6ba9c4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="depth-caption">KEEP DIVING</div>
+</aside>
 
 <script>
 const STORAGE_BANKS_KEY = 'trench_custom_banks_v1';
@@ -306,112 +522,247 @@ const STORAGE_STATS_KEY = 'trench_stats_v1';
 
 const FALLBACK_BANKS = [
   {
-    id: 'builtin-christian-beliefs',
-    name: 'Christian Beliefs (Built-in)',
-    subject: 'Religious Studies',
-    examBoard: 'AQA',
-    specification: '8062',
-    questions: [
-      { question: "What is meant by monotheism?", type: "short", options: "", answer: "Belief in one God", model_answer: "", explanation: "Monotheism is belief in one God.", subject: "Religious Studies", exam_board: "AQA", specification: "8062", topic: "Christian beliefs", subtopic: "Nature of God", difficulty: "easy", marks: "1" },
-      { question: "Which term describes God as all-powerful?", type: "mc", options: "Omnipotent | Omniscient | Benevolent | Eternal", answer: "Omnipotent", model_answer: "", explanation: "Omnipotent means all-powerful.", subject: "Religious Studies", exam_board: "AQA", specification: "8062", topic: "Christian beliefs", subtopic: "Nature of God", difficulty: "easy", marks: "1" },
-      { question: "Give one reason why Christians believe in the incarnation.", type: "short", options: "", answer: "God became human in Jesus", model_answer: "", explanation: "The incarnation is the belief that God became human in Jesus Christ.", subject: "Religious Studies", exam_board: "AQA", specification: "8062", topic: "Christian beliefs", subtopic: "Jesus Christ", difficulty: "medium", marks: "2" }
+    id:'builtin-christian-beliefs',
+    name:'Christian Beliefs (Built-in)',
+    subject:'Religious Studies',
+    examBoard:'AQA',
+    specification:'8062',
+    questions:[
+      {
+        question:'What is meant by monotheism?',
+        type:'short',
+        options:'',
+        answer:'Belief in one God',
+        model_answer:'',
+        explanation:'Monotheism is belief in one God.',
+        subject:'Religious Studies',
+        exam_board:'AQA',
+        specification:'8062',
+        topic:'Christian beliefs',
+        subtopic:'Nature of God',
+        difficulty:'easy',
+        marks:'1'
+      },
+      {
+        question:'Which term describes God as all-powerful?',
+        type:'mc',
+        options:'Omnipotent | Omniscient | Benevolent | Eternal',
+        answer:'Omnipotent',
+        model_answer:'',
+        explanation:'Omnipotent means all-powerful.',
+        subject:'Religious Studies',
+        exam_board:'AQA',
+        specification:'8062',
+        topic:'Christian beliefs',
+        subtopic:'Nature of God',
+        difficulty:'easy',
+        marks:'1'
+      },
+      {
+        question:'Give one reason why Christians believe in the incarnation.',
+        type:'short',
+        options:'',
+        answer:'God became human in Jesus',
+        model_answer:'',
+        explanation:'The incarnation is the belief that God became human in Jesus Christ.',
+        subject:'Religious Studies',
+        exam_board:'AQA',
+        specification:'8062',
+        topic:'Christian beliefs',
+        subtopic:'Jesus Christ',
+        difficulty:'medium',
+        marks:'2'
+      }
     ]
   },
   {
-    id: 'builtin-islamic-beliefs',
-    name: 'Islamic Beliefs (Built-in)',
-    subject: 'Religious Studies',
-    examBoard: 'AQA',
-    specification: '8062',
-    questions: [
-      { question: "What is Tawhid?", type: "short", options: "", answer: "The oneness of Allah", model_answer: "", explanation: "Tawhid is the absolute oneness and unity of Allah.", subject: "Religious Studies", exam_board: "AQA", specification: "8062", topic: "Islamic beliefs", subtopic: "Nature of Allah", difficulty: "easy", marks: "1" },
-      { question: "Which angel delivered messages to the prophets?", type: "mc", options: "Jibril | Mikail | Israfil | Azrail", answer: "Jibril", model_answer: "", explanation: "Jibril is the angel who delivered revelations from Allah.", subject: "Religious Studies", exam_board: "AQA", specification: "8062", topic: "Islamic beliefs", subtopic: "Angels", difficulty: "easy", marks: "1" },
-      { question: "What is the Qur'an?", type: "short", options: "", answer: "The holy book of Islam", model_answer: "", explanation: "Muslims believe the Qur'an is the word of Allah revealed to Muhammad.", subject: "Religious Studies", exam_board: "AQA", specification: "8062", topic: "Islamic beliefs", subtopic: "Holy books", difficulty: "easy", marks: "2" }
+    id:'builtin-islamic-beliefs',
+    name:'Islamic Beliefs (Built-in)',
+    subject:'Religious Studies',
+    examBoard:'AQA',
+    specification:'8062',
+    questions:[
+      {
+        question:'What is Tawhid?',
+        type:'short',
+        options:'',
+        answer:'The oneness of Allah',
+        model_answer:'',
+        explanation:'Tawhid is the absolute oneness and unity of Allah.',
+        subject:'Religious Studies',
+        exam_board:'AQA',
+        specification:'8062',
+        topic:'Islamic beliefs',
+        subtopic:'Nature of Allah',
+        difficulty:'easy',
+        marks:'1'
+      },
+      {
+        question:'Which angel delivered messages to the prophets?',
+        type:'mc',
+        options:'Jibril | Mikail | Israfil | Azrail',
+        answer:'Jibril',
+        model_answer:'',
+        explanation:'Jibril is the angel who delivered revelations from Allah.',
+        subject:'Religious Studies',
+        exam_board:'AQA',
+        specification:'8062',
+        topic:'Islamic beliefs',
+        subtopic:'Angels',
+        difficulty:'easy',
+        marks:'1'
+      },
+      {
+        question:'What is the Qur’an?',
+        type:'short',
+        options:'',
+        answer:'The holy book of Islam',
+        model_answer:'',
+        explanation:'Muslims believe the Qur’an is the word of Allah revealed to Muhammad.',
+        subject:'Religious Studies',
+        exam_board:'AQA',
+        specification:'8062',
+        topic:'Islamic beliefs',
+        subtopic:'Holy books',
+        difficulty:'easy',
+        marks:'2'
+      }
     ]
   }
 ];
 
 let availableBanks = [];
-let currentDive = { questions: [], index: 0, depth: 0, streak: 0, score: 0, selectedOption: null, answered: false };
+
+let currentDive = {
+  questions:[],
+  index:0,
+  depth:0,
+  streak:0,
+  score:0,
+  selectedOption:null,
+  answered:false
+};
+
+/* CSV PARSER */
 
 function parseCSV(text) {
   const rows = [];
-  let row = [], cell = '', inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i], next = text[i + 1];
+  let row = [];
+  let cell = '';
+  let inQuotes = false;
+
+  for (let i=0; i<text.length; i++) {
+    const ch = text[i];
+    const next = text[i+1];
+
     if (inQuotes) {
-      if (ch === '"' && next === '"') { cell += '"'; i++; }
-      else if (ch === '"') { inQuotes = false; }
-      else { cell += ch; }
+      if (ch === '"' && next === '"') {
+        cell += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        cell += ch;
+      }
     } else {
-      if (ch === '"') { inQuotes = true; }
-      else if (ch === ',') { row.push(cell.trim()); cell = ''; }
-      else if (ch === '\n' || (ch === '\r' && next === '\n')) {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ',') {
+        row.push(cell.trim());
+        cell = '';
+      } else if (ch === '\n' || (ch === '\r' && next === '\n')) {
         if (ch === '\r') i++;
         row.push(cell.trim());
         if (row.some(c => c !== '')) rows.push(row);
-        row = []; cell = '';
-      } else { cell += ch; }
+        row = [];
+        cell = '';
+      } else {
+        cell += ch;
+      }
     }
   }
+
   if (cell.length > 0 || row.length > 0) {
     row.push(cell.trim());
     if (row.some(c => c !== '')) rows.push(row);
   }
+
   if (rows.length < 2) return [];
+
   const headers = rows[0].map(h => h.toLowerCase());
+
   return rows.slice(1).map(r => {
     const obj = {};
-    headers.forEach((h, idx) => { obj[h] = r[idx] || ''; });
+    headers.forEach((h, idx) => {
+      obj[h] = r[idx] || '';
+    });
     return obj;
   }).filter(q => q.question);
 }
 
+/* LOAD QUESTION BANKS */
+
 async function loadAllBanks() {
   const loaded = [];
   const statusEl = document.getElementById('library-status');
+
   try {
     const res = await fetch('question-banks/index.json');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    if (!res.ok) throw new Error('Could not load question bank index');
+
     const catalogue = await res.json();
+
     for (const entry of (catalogue.banks || [])) {
       try {
         const csvRes = await fetch('question-banks/' + entry.file);
+
         if (csvRes.ok) {
           const csvText = await csvRes.text();
           const questions = parseCSV(csvText);
+
           loaded.push({
-            id: 'shared-' + entry.file,
-            name: entry.name,
-            subject: entry.subject || '',
-            examBoard: entry.examBoard || '',
-            specification: entry.specification || '',
-            source: 'Shared',
+            id:'shared-' + entry.file,
+            name:entry.name,
+            subject:entry.subject || '',
+            examBoard:entry.examBoard || '',
+            specification:entry.specification || '',
+            source:'Shared',
             questions
           });
         }
-      } catch (e) { console.warn('Failed to load CSV:', entry.file, e); }
+      } catch (e) {
+        console.warn('Failed to load CSV:', entry.file, e);
+      }
     }
+
+    if (!loaded.length) {
+      throw new Error('No shared banks found');
+    }
+
     statusEl.textContent = '';
+
   } catch (err) {
-    statusEl.textContent = 'Running without local HTTP server — loaded built-in starter banks.';
-    FALLBACK_BANKS.forEach(b => loaded.push({ ...b, source: 'Built-in' }));
+    statusEl.textContent = 'Shared banks unavailable. Loaded built-in starter banks instead.';
+    FALLBACK_BANKS.forEach(b => loaded.push({...b,source:'Built-in'}));
   }
 
   const custom = JSON.parse(localStorage.getItem(STORAGE_BANKS_KEY) || '[]');
-  custom.forEach(b => loaded.push({ ...b, source: 'Local' }));
+  custom.forEach(b => loaded.push({...b,source:'Local'}));
 
   availableBanks = loaded;
   renderLibrary();
 }
 
+/* LIBRARY */
+
 function renderLibrary() {
   const selector = document.getElementById('bank-selector');
   const list = document.getElementById('bank-list');
+
   selector.innerHTML = '';
   list.innerHTML = '';
 
-  availableBanks.forEach((bank, idx) => {
+  availableBanks.forEach((bank,idx) => {
     const opt = document.createElement('option');
     opt.value = idx;
     opt.textContent = `${bank.name} (${bank.questions.length} questions)`;
@@ -419,25 +770,48 @@ function renderLibrary() {
 
     const card = document.createElement('div');
     card.className = 'bank-card';
-    card.innerHTML = `
-      <div class="bank-info">
-        <h3>${bank.name}</h3>
-        <small>${[bank.subject, bank.examBoard, bank.specification].filter(Boolean).join(' · ')} · ${bank.questions.length} questions · ${bank.source}</small>
-      </div>
-      <div style="display:flex; gap:0.5rem;">
-        <button class="btn-primary" onclick="launchBank(${idx})">Dive</button>
-        ${bank.source === 'Local' ? `<button class="btn-secondary" onclick="deleteLocalBank('${bank.id}')">Delete</button>` : ''}
-      </div>
-    `;
+
+    const info = document.createElement('div');
+    info.className = 'bank-info';
+
+    const heading = document.createElement('h3');
+    heading.textContent = bank.name;
+
+    const small = document.createElement('small');
+    small.textContent =
+      `${[bank.subject,bank.examBoard,bank.specification].filter(Boolean).join(' · ')} · ${bank.questions.length} questions · ${bank.source}`;
+
+    info.append(heading,small);
+
+    const actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.gap = '.5rem';
+
+    const diveBtn = document.createElement('button');
+    diveBtn.className = 'btn-primary';
+    diveBtn.textContent = 'Dive';
+    diveBtn.onclick = () => launchBank(idx);
+    actions.appendChild(diveBtn);
+
+    if (bank.source === 'Local') {
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'btn-secondary';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.onclick = () => deleteLocalBank(bank.id);
+      actions.appendChild(deleteBtn);
+    }
+
+    card.append(info,actions);
     list.appendChild(card);
   });
 }
 
 function showTab(tab) {
-  ['dive', 'library', 'import', 'stats'].forEach(t => {
-    document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
-    document.getElementById('nav-' + t).classList.toggle('active', t === tab);
+  ['dive','library','import','stats'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('hidden',t !== tab);
+    document.getElementById('nav-' + t).classList.toggle('active',t === tab);
   });
+
   if (tab === 'stats') renderStats();
 }
 
@@ -447,99 +821,173 @@ function launchBank(idx) {
   startDive();
 }
 
+/* DIVE AND DEPTH ANIMATION */
+
+function updateDescent() {
+  const depth = currentDive.depth;
+  const progress = Math.min(depth / 1000,1);
+
+  const label = document.getElementById('depth-label');
+  const track = document.querySelector('.depth-track');
+  const diver = document.getElementById('diver');
+
+  if (label) {
+    label.textContent = depth.toLocaleString('en-GB') + ' M';
+  }
+
+  if (track && diver) {
+    const availableHeight = track.clientHeight - 16;
+    const position = 8 + progress * availableHeight;
+    diver.style.top = position + 'px';
+  }
+
+  const mix = (a,b) => Math.round(a + (b-a) * progress);
+
+  document.body.style.background = `
+    linear-gradient(
+      180deg,
+      rgb(${mix(11,1)},${mix(57,5)},${mix(84,15)}) 0%,
+      rgb(${mix(6,1)},${mix(26,3)},${mix(48,8)}) 100%
+    )
+  `;
+}
+
 function startDive() {
-  const idx = parseInt(document.getElementById('bank-selector').value, 10);
+  const idx = parseInt(document.getElementById('bank-selector').value,10);
   const bank = availableBanks[idx];
-  if (!bank || !bank.questions.length) return alert('Selected bank has no questions.');
+
+  if (!bank || !bank.questions.length) {
+    return alert('Selected bank has no questions.');
+  }
 
   currentDive = {
-    questions: [...bank.questions],
-    index: 0,
-    depth: 0,
-    streak: 0,
-    score: 0,
-    selectedOption: null,
-    answered: false
+    questions:[...bank.questions],
+    index:0,
+    depth:0,
+    streak:0,
+    score:0,
+    selectedOption:null,
+    answered:false
   };
+
+  document.body.classList.add('diving');
+  updateDescent();
 
   document.getElementById('dive-setup').classList.add('hidden');
   document.getElementById('dive-complete').classList.add('hidden');
   document.getElementById('dive-active').classList.remove('hidden');
+
   renderQuestion();
 }
 
 function renderQuestion() {
   const q = currentDive.questions[currentDive.index];
+
   currentDive.selectedOption = null;
   currentDive.answered = false;
 
   document.getElementById('hud-depth').textContent = currentDive.depth + 'm';
   document.getElementById('hud-streak').textContent = currentDive.streak;
-  document.getElementById('hud-progress').textContent = `${currentDive.index + 1} / ${currentDive.questions.length}`;
+  document.getElementById('hud-progress').textContent =
+    `${currentDive.index+1} / ${currentDive.questions.length}`;
 
-  const meta = [q.topic, q.subtopic, q.difficulty, q.marks ? q.marks + ' mark(s)' : ''].filter(Boolean);
-  document.getElementById('q-meta').innerHTML = meta.map(m => `<span class="badge">${m}</span>`).join('');
+  const meta = [
+    q.topic,
+    q.subtopic,
+    q.difficulty,
+    q.marks ? q.marks + ' mark(s)' : ''
+  ].filter(Boolean);
+
+  const metaEl = document.getElementById('q-meta');
+  metaEl.innerHTML = '';
+
+  meta.forEach(m => {
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = m;
+    metaEl.appendChild(badge);
+  });
+
   document.getElementById('q-text').textContent = q.question;
 
   const inputArea = document.getElementById('q-input-area');
   inputArea.innerHTML = '';
+
   const type = (q.type || 'short').toLowerCase();
 
   if (type === 'mc' || type === 'tf') {
     const opts = type === 'tf' && !q.options
-      ? ['True', 'False']
-      : q.options.split('|').map(o => o.trim()).filter(Boolean);
+      ? ['True','False']
+      : (q.options || '').split('|').map(o => o.trim()).filter(Boolean);
+
     const grid = document.createElement('div');
     grid.className = 'options-grid';
+
     opts.forEach(optText => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'opt-btn';
       btn.textContent = optText;
+
       btn.onclick = () => {
         if (currentDive.answered) return;
-        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+
+        document.querySelectorAll('.opt-btn').forEach(b => {
+          b.classList.remove('selected');
+        });
+
         btn.classList.add('selected');
         currentDive.selectedOption = optText;
       };
+
       grid.appendChild(btn);
     });
+
     inputArea.appendChild(grid);
+
   } else if (type === 'extended') {
     const ta = document.createElement('textarea');
     ta.id = 'user-text-answer';
     ta.rows = 4;
     ta.placeholder = 'Write your extended answer here...';
     inputArea.appendChild(ta);
+
   } else {
     const inp = document.createElement('input');
     inp.type = 'text';
     inp.id = 'user-text-answer';
     inp.placeholder = 'Type your answer...';
     inp.autocomplete = 'off';
-    inp.addEventListener('keydown', (e) => {
+
+    inp.addEventListener('keydown',e => {
       if (e.key === 'Enter' && !currentDive.answered) {
         e.preventDefault();
         submitAnswer();
       }
     });
+
     inputArea.appendChild(inp);
-    setTimeout(() => inp.focus(), 10);
+    setTimeout(() => inp.focus(),10);
   }
 
   document.getElementById('btn-submit').classList.remove('hidden');
   document.getElementById('btn-next').classList.add('hidden');
+
   const fb = document.getElementById('feedback-area');
   fb.className = 'feedback-box hidden';
-  fb.innerHTML = '';
+  fb.textContent = '';
 }
+
+/* ANSWER CHECKING */
 
 function submitAnswer() {
   if (currentDive.answered) return;
+
   const q = currentDive.questions[currentDive.index];
   const type = (q.type || 'short').toLowerCase();
 
   let userAns = '';
+
   if (type === 'mc' || type === 'tf') {
     userAns = currentDive.selectedOption || '';
   } else {
@@ -548,20 +996,26 @@ function submitAnswer() {
   }
 
   if (!userAns) return;
+
   currentDive.answered = true;
 
   const expected = (q.answer || '').trim();
   let isCorrect = false;
+
   if (type === 'extended') {
-    isCorrect = true; // Self-assessed against model answer
+    // Extended answers are self-assessed.
+    isCorrect = true;
   } else {
     isCorrect = userAns.toLowerCase() === expected.toLowerCase();
   }
 
   if (type === 'mc' || type === 'tf') {
     document.querySelectorAll('.opt-btn').forEach(btn => {
-      if (btn.textContent.toLowerCase() === expected.toLowerCase()) btn.classList.add('correct');
-      else if (btn.classList.contains('selected') && !isCorrect) btn.classList.add('wrong');
+      if (btn.textContent.toLowerCase() === expected.toLowerCase()) {
+        btn.classList.add('correct');
+      } else if (btn.classList.contains('selected') && !isCorrect) {
+        btn.classList.add('wrong');
+      }
     });
   }
 
@@ -573,20 +1027,45 @@ function submitAnswer() {
     currentDive.streak = 0;
   }
 
-  updateStats(isCorrect, currentDive.depth);
+  updateStats(isCorrect,currentDive.depth);
 
   document.getElementById('hud-depth').textContent = currentDive.depth + 'm';
   document.getElementById('hud-streak').textContent = currentDive.streak;
 
+  // Animate the diver and update the underwater environment.
+  updateDescent();
+
   const fb = document.getElementById('feedback-area');
-  fb.classList.remove('hidden');
-  fb.classList.add(isCorrect ? 'ok' : 'bad');
-  fb.innerHTML = `
-    <strong>${type === 'extended' ? 'Compare with Model Answer' : (isCorrect ? 'Correct! +50m depth' : 'Not quite')}</strong>
-    ${expected ? `<div style="margin-top:0.4rem;"><strong>Answer:</strong> ${expected}</div>` : ''}
-    ${q.model_answer ? `<div style="margin-top:0.4rem;"><strong>Model Answer:</strong> ${q.model_answer}</div>` : ''}
-    ${q.explanation ? `<div style="margin-top:0.4rem; color:var(--text-muted);">${q.explanation}</div>` : ''}
-  `;
+  fb.className = 'feedback-box ' + (isCorrect ? 'ok' : 'bad');
+
+  const heading = document.createElement('strong');
+  heading.textContent = type === 'extended'
+    ? 'Compare with Model Answer'
+    : (isCorrect ? 'Correct! +50m depth' : 'Not quite');
+
+  fb.appendChild(heading);
+
+  if (expected) {
+    const answer = document.createElement('div');
+    answer.style.marginTop = '.4rem';
+    answer.textContent = 'Answer: ' + expected;
+    fb.appendChild(answer);
+  }
+
+  if (q.model_answer) {
+    const model = document.createElement('div');
+    model.style.marginTop = '.4rem';
+    model.textContent = 'Model Answer: ' + q.model_answer;
+    fb.appendChild(model);
+  }
+
+  if (q.explanation) {
+    const explanation = document.createElement('div');
+    explanation.style.marginTop = '.4rem';
+    explanation.style.color = 'var(--text-muted)';
+    explanation.textContent = q.explanation;
+    fb.appendChild(explanation);
+  }
 
   document.getElementById('btn-submit').classList.add('hidden');
   document.getElementById('btn-next').classList.remove('hidden');
@@ -594,11 +1073,14 @@ function submitAnswer() {
 
 function nextQuestion() {
   currentDive.index++;
+
   if (currentDive.index >= currentDive.questions.length) {
     document.getElementById('dive-active').classList.add('hidden');
     document.getElementById('dive-complete').classList.remove('hidden');
+
     document.getElementById('dive-summary').textContent =
       `You reached ${currentDive.depth}m and scored ${currentDive.score} out of ${currentDive.questions.length}.`;
+
   } else {
     renderQuestion();
   }
@@ -607,72 +1089,134 @@ function nextQuestion() {
 function resetDive() {
   document.getElementById('dive-complete').classList.add('hidden');
   document.getElementById('dive-setup').classList.remove('hidden');
+
   document.getElementById('hud-depth').textContent = '0m';
   document.getElementById('hud-streak').textContent = '0';
   document.getElementById('hud-progress').textContent = '0 / 0';
+
+  document.body.classList.remove('diving');
+
+  currentDive = {
+    questions:[],
+    index:0,
+    depth:0,
+    streak:0,
+    score:0,
+    selectedOption:null,
+    answered:false
+  };
+
+  document.body.style.background = '';
+  updateDescent();
 }
 
-document.getElementById('import-file').addEventListener('change', (e) => {
+/* CSV IMPORT */
+
+document.getElementById('import-file').addEventListener('change',e => {
   const file = e.target.files[0];
   if (!file) return;
+
   if (!document.getElementById('import-name').value) {
-    document.getElementById('import-name').value = file.name.replace(/\.csv$/i, '');
+    document.getElementById('import-name').value =
+      file.name.replace(/\.csv$/i,'');
   }
+
   const reader = new FileReader();
-  reader.onload = (ev) => { document.getElementById('import-csv').value = ev.target.result; };
+
+  reader.onload = ev => {
+    document.getElementById('import-csv').value = ev.target.result;
+  };
+
   reader.readAsText(file);
 });
 
 function importCSV() {
-  const name = document.getElementById('import-name').value.trim() || 'Custom Bank';
+  const name =
+    document.getElementById('import-name').value.trim() || 'Custom Bank';
+
   const raw = document.getElementById('import-csv').value.trim();
   const questions = parseCSV(raw);
-  if (!questions.length) return alert('No valid questions found. Make sure you include the CSV header row.');
+
+  if (!questions.length) {
+    return alert('No valid questions found. Make sure you include the CSV header row.');
+  }
 
   const custom = JSON.parse(localStorage.getItem(STORAGE_BANKS_KEY) || '[]');
+
   custom.push({
-    id: 'local-' + Date.now(),
+    id:'local-' + Date.now(),
     name,
-    subject: questions[0].subject || 'Custom',
-    examBoard: questions[0].exam_board || '',
-    specification: questions[0].specification || '',
+    subject:questions[0].subject || 'Custom',
+    examBoard:questions[0].exam_board || '',
+    specification:questions[0].specification || '',
     questions
   });
-  localStorage.setItem(STORAGE_BANKS_KEY, JSON.stringify(custom));
+
+  localStorage.setItem(STORAGE_BANKS_KEY,JSON.stringify(custom));
+
   document.getElementById('import-name').value = '';
   document.getElementById('import-csv').value = '';
+  document.getElementById('import-file').value = '';
+
+  alert(`Successfully imported ${questions.length} questions.`);
+
   loadAllBanks();
   showTab('library');
 }
 
 function deleteLocalBank(id) {
-  const custom = JSON.parse(localStorage.getItem(STORAGE_BANKS_KEY) || '[]').filter(b => b.id !== id);
-  localStorage.setItem(STORAGE_BANKS_KEY, JSON.stringify(custom));
+  const custom = JSON.parse(localStorage.getItem(STORAGE_BANKS_KEY) || '[]')
+    .filter(b => b.id !== id);
+
+  localStorage.setItem(STORAGE_BANKS_KEY,JSON.stringify(custom));
   loadAllBanks();
 }
 
-function updateStats(correct, depth) {
-  const stats = JSON.parse(localStorage.getItem(STORAGE_STATS_KEY) || '{"answered":0,"correct":0,"maxDepth":0}');
+/* STATISTICS */
+
+function updateStats(correct,depth) {
+  const stats = JSON.parse(
+    localStorage.getItem(STORAGE_STATS_KEY) ||
+    '{"answered":0,"correct":0,"maxDepth":0}'
+  );
+
   stats.answered++;
+
   if (correct) stats.correct++;
   if (depth > stats.maxDepth) stats.maxDepth = depth;
-  localStorage.setItem(STORAGE_STATS_KEY, JSON.stringify(stats));
+
+  localStorage.setItem(STORAGE_STATS_KEY,JSON.stringify(stats));
 }
 
 function renderStats() {
-  const stats = JSON.parse(localStorage.getItem(STORAGE_STATS_KEY) || '{"answered":0,"correct":0,"maxDepth":0}');
+  const stats = JSON.parse(
+    localStorage.getItem(STORAGE_STATS_KEY) ||
+    '{"answered":0,"correct":0,"maxDepth":0}'
+  );
+
   document.getElementById('stat-answered').textContent = stats.answered;
   document.getElementById('stat-correct').textContent = stats.correct;
-  document.getElementById('stat-accuracy').textContent = stats.answered ? Math.round((stats.correct / stats.answered) * 100) + '%' : '0%';
-  document.getElementById('stat-max-depth').textContent = stats.maxDepth + 'm';
+
+  document.getElementById('stat-accuracy').textContent =
+    stats.answered
+      ? Math.round((stats.correct / stats.answered) * 100) + '%'
+      : '0%';
+
+  document.getElementById('stat-max-depth').textContent =
+    stats.maxDepth + 'm';
 }
 
 function clearStats() {
+  if (!confirm('Are you sure you want to reset all your statistics?')) return;
+
   localStorage.removeItem(STORAGE_STATS_KEY);
   renderStats();
 }
 
+/* START APP */
+
 loadAllBanks();
 </script>
+
 </body>
 </html>
