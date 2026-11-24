@@ -257,8 +257,9 @@ input:focus, textarea:focus, select:focus {
   transition:opacity .6s ease;
 }
 
-body.diving #descent { opacity:1; }
-
+#descent {
+    opacity: 1;
+}
 .depth-heading {
   font-size:10px;
   letter-spacing:3px;
@@ -314,18 +315,36 @@ body.diving #descent { opacity:1; }
 .tick-1000 { top:calc(100% - 8px); }
 
 #diver {
-  position:absolute;
-  left:29px;
-  top:8px;
-  transform:translateY(-50%);
-  transition:top 1.2s cubic-bezier(.2,.8,.2,1);
-  filter:drop-shadow(0 0 9px rgba(140,220,255,.8));
-  animation:diverSwim 2.5s ease-in-out infinite;
+    position: absolute;
+    left: 18px;
+    top: 8px;
+    width: 64px;
+    height: 64px;
+    z-index: 20;
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(-50%);
+    transition: top 1.2s cubic-bezier(.2,.8,.2,1);
+    filter: drop-shadow(0 0 12px rgba(140,220,255,.9));
+    animation: diverSwim 2.5s ease-in-out infinite;
+}
+
+#diver svg {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 @keyframes diverSwim {
-  0%,100% { margin-left:0; rotate:-4deg; }
-  50% { margin-left:5px; rotate:4deg; }
+    0%, 100% {
+        margin-left: 0;
+        rotate: -4deg;
+    }
+    50% {
+        margin-left: 5px;
+        rotate: 4deg;
+    }
 }
 
 .depth-caption {
@@ -496,21 +515,11 @@ body.diving #descent { opacity:1; }
     <div class="depth-tick tick-1000">1000m</div>
 
     <div id="diver">
-      <svg viewBox="0 0 64 64" width="42" height="42">
-        <g fill="none" stroke="currentColor" stroke-width="3"
-           stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="34" cy="15" r="9" fill="#f0c987"/>
-          <path d="M25 14 Q34 2 43 14" fill="#d8e8ef"/>
-          <path d="M25 27 L42 27 L47 43 L29 45" fill="#e76d4d"/>
-          <path d="M29 43 L20 54 L29 57 L37 45"/>
-          <path d="M42 43 L51 51 L57 47 L47 38"/>
-          <path d="M27 30 L15 38 L19 43 L32 36"/>
-          <path d="M43 30 L54 34 L52 39 L41 36"/>
-          <path d="M32 45 L31 57 M43 44 L47 57"/>
-        </g>
-        <circle cx="34" cy="15" r="4" fill="#6ba9c4"/>
-      </svg>
-    </div>
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="35" fill="#00d2ff"/>
+        <circle cx="50" cy="50" r="15" fill="#ffffff"/>
+    </svg>
+</div>
   </div>
 
   <div class="depth-caption">KEEP DIVING</div>
@@ -824,32 +833,33 @@ function launchBank(idx) {
 /* DIVE AND DEPTH ANIMATION */
 
 function updateDescent() {
-  const depth = currentDive.depth;
-  const progress = Math.min(depth / 1000,1);
+    const depth = currentDive.depth;
+    const progress = Math.min(depth / 1000, 1);
 
-  const label = document.getElementById('depth-label');
-  const track = document.querySelector('.depth-track');
-  const diver = document.getElementById('diver');
+    const label = document.getElementById('depth-label');
+    const track = document.querySelector('.depth-track');
+    const diver = document.getElementById('diver');
 
-  if (label) {
-    label.textContent = depth.toLocaleString('en-GB') + ' M';
-  }
+    if (label) {
+        label.textContent = depth.toLocaleString('en-GB') + ' M';
+    }
 
-  if (track && diver) {
-    const availableHeight = track.clientHeight - 16;
-    const position = 8 + progress * availableHeight;
-    diver.style.top = position + 'px';
-  }
+    if (track && diver) {
+        const availableHeight = track.clientHeight - diver.offsetHeight;
+        const position = (availableHeight * progress) + diver.offsetHeight / 2;
 
-  const mix = (a,b) => Math.round(a + (b-a) * progress);
+        diver.style.top = position + 'px';
+    }
 
-  document.body.style.background = `
-    linear-gradient(
-      180deg,
-      rgb(${mix(11,1)},${mix(57,5)},${mix(84,15)}) 0%,
-      rgb(${mix(6,1)},${mix(26,3)},${mix(48,8)}) 100%
-    )
-  `;
+    const mix = (a, b) => Math.round(a + (b - a) * progress);
+
+    document.body.style.background = `
+        linear-gradient(
+            180deg,
+            rgb(${mix(11,1)},${mix(57,5)},${mix(84,15)}) 0%,
+            rgb(${mix(6,1)},${mix(26,3)},${mix(48,8)}) 100%
+        )
+    `;
 }
 
 function startDive() {
