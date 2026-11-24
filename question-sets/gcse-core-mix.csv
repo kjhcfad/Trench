@@ -1,0 +1,4 @@
+subject,board,topic,subtopic,difficulty,type,marks,text,options,answer,model,explain,sets
+Biology,AQA,Cell biology,Osmosis,easy,fill,1,Osmosis is the net movement of ___ molecules across a partially permeable membrane from a region of higher water concentration to lower.,,water,,Osmosis is the movement of water molecules across a partially permeable membrane.,Biology Paper 1
+Physics,AQA,Electricity,Resistance,medium,short,2,Calculate the potential difference across a 5 ohm resistor carrying a current of 3 A (include unit).,,15 V|15v|15 volts|15,,Potential difference V = I x R = 3 A x 5 ohm = 15 V.,Physics Paper 1
+Maths,Edexcel,Algebra,Factorising,medium,short,2,Factorise x^2 + 7x + 10.,, (x+5)(x+2)|(x+2)(x+5)|(x + 5)(x + 2)|(x + 2)(x + 5),,Two numbers that multiply to 10 and add to 7 are +5 and +2.,Maths Core

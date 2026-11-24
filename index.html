@@ -1,0 +1,2526 @@
+<!doctype html>
+<html lang="en-GB">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <title>Trench · the GCSE dive</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <style>
+            :root {
+                --bg: #eef5f9;
+                --fg: #0a1a2b;
+                --mut: #5b7186;
+                --card: #fff;
+                --line: #cfdde8;
+                --acc: #0a7ea4;
+                --ok: #128a5a;
+                --bad: #c2410c;
+                color-scheme: light;
+                box-sizing: border-box;
+                padding-top: env(safe-area-inset-top, 0px);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme="light"]) {
+                    --bg: #050a14;
+                    --fg: #e6f0f8;
+                    --mut: #8aa3b8;
+                    --card: #0b1626;
+                    --line: #1a2b42;
+                    --acc: #4cc9f0;
+                    --ok: #34d399;
+                    --bad: #fb923c;
+                    color-scheme: dark;
+                }
+            }
+            :root[data-theme="dark"] {
+                --bg: #050a14;
+                --fg: #e6f0f8;
+                --mut: #8aa3b8;
+                --card: #0b1626;
+                --line: #1a2b42;
+                --acc: #4cc9f0;
+                --ok: #34d399;
+                --bad: #fb923c;
+                color-scheme: dark;
+            }
+            html {
+                scroll-padding-top: env(safe-area-inset-top, 0px);
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                min-height: 100vh;
+                font:
+                    16px/1.5 system-ui,
+                    -apple-system,
+                    Segoe UI,
+                    Roboto,
+                    sans-serif;
+                background: var(--bg);
+                color: var(--fg);
+                transition: background 1.2s;
+            }
+            body.sea {
+                --fg: #e6f0f8;
+                --mut: #9ab3c7;
+                --card: #0a1626b0;
+                --line: #ffffff24;
+                --acc: #4cc9f0;
+                --ok: #34d399;
+                --bad: #fb923c;
+                color-scheme: dark;
+            }
+            header {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 20px;
+                align-items: center;
+                padding: 14px 20px;
+                border-bottom: 1px solid var(--line);
+            }
+            .logo {
+                font-weight: 800;
+                letter-spacing: 0.22em;
+                color: var(--fg);
+                text-decoration: none;
+            }
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px 16px;
+                margin-left: auto;
+            }
+            nav a,
+            nav button {
+                color: var(--mut);
+                text-decoration: none;
+                font-size: 14px;
+                background: none;
+                border: 0;
+                cursor: pointer;
+                padding: 2px 0;
+                border-bottom: 2px solid transparent;
+                transition: 0.15s;
+            }
+            nav a:hover,
+            nav button:hover {
+                color: var(--fg);
+            }
+            nav a.on {
+                color: var(--fg);
+                border-color: var(--acc);
+            }
+            main {
+                max-width: 760px;
+                margin: 0 auto;
+                padding: 28px 20px 80px;
+            }
+            h1 {
+                font-size: clamp(34px, 7vw, 56px);
+                line-height: 1.05;
+                margin: 0.3em 0 0.2em;
+                letter-spacing: -0.02em;
+            }
+            h2 {
+                margin: 0.2em 0 0.6em;
+            }
+            h3 {
+                margin: 1.4em 0 0.5em;
+                font-size: 13px;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: var(--mut);
+            }
+            p.sub {
+                color: var(--mut);
+                margin: 0 0 24px;
+            }
+            small,
+            .meta {
+                color: var(--mut);
+                font-size: 13px;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 12px;
+            }
+            label.f {
+                display: block;
+                font-size: 12px;
+                color: var(--mut);
+            }
+            select,
+            input,
+            textarea {
+                width: 100%;
+                font: inherit;
+                padding: 9px 10px;
+                border: 1px solid var(--line);
+                background: var(--card);
+                color: var(--fg);
+                border-radius: 4px;
+                transition: 0.15s;
+            }
+            select:focus,
+            input:focus,
+            textarea:focus {
+                outline: 0;
+                border-color: var(--acc);
+            }
+            button.pri,
+            button.ghost,
+            button.opt {
+                font: inherit;
+                cursor: pointer;
+                border-radius: 4px;
+                padding: 10px 18px;
+                transition: 0.15s;
+                border: 1px solid var(--acc);
+            }
+            button.pri {
+                background: var(--acc);
+                color: #02101c;
+                font-weight: 700;
+            }
+            button.pri:hover {
+                filter: brightness(1.1);
+                transform: translateY(-1px);
+            }
+            button.ghost {
+                background: none;
+                color: var(--acc);
+            }
+            button.ghost:hover {
+                background: var(--acc);
+                color: #02101c;
+            }
+            button:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+            .row {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                align-items: center;
+                margin: 16px 0;
+            }
+            .stat {
+                display: flex;
+                gap: 28px;
+                flex-wrap: wrap;
+                margin: 22px 0;
+            }
+            .stat b {
+                display: block;
+                font-size: 30px;
+                line-height: 1.1;
+            }
+            .bar2 {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin: 6px 0;
+                font-size: 14px;
+            }
+            .bar2 span:first-child {
+                width: 38%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .bar2 i {
+                flex: 1;
+                height: 8px;
+                background: var(--line);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            .bar2 i s {
+                display: block;
+                height: 100%;
+                background: var(--acc);
+                transition: width 0.6s;
+            }
+            .item {
+                display: grid;
+                grid-template-columns: auto 1fr auto auto;
+                gap: 10px;
+                align-items: center;
+                padding: 9px 0;
+                border-bottom: 1px solid var(--line);
+            }
+            .item .qt {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .item button {
+                background: none;
+                border: 0;
+                color: var(--mut);
+                cursor: pointer;
+                padding: 4px 6px;
+            }
+            .item button:hover {
+                color: var(--acc);
+            }
+            details {
+                margin-left: 14px;
+            }
+            summary {
+                cursor: pointer;
+                font-size: 14px;
+                padding: 2px 0;
+            }
+            summary em {
+                color: var(--mut);
+                font-style: normal;
+                font-size: 12px;
+                margin-left: 6px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+            }
+            td,
+            th {
+                text-align: left;
+                padding: 5px 6px;
+                border-bottom: 1px solid var(--line);
+                vertical-align: top;
+            }
+            .err {
+                color: var(--bad);
+            }
+            .good {
+                color: var(--ok);
+            }
+            dialog {
+                max-width: 560px;
+                width: 92vw;
+                background: var(--card);
+                color: var(--fg);
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                padding: 20px;
+            }
+            dialog::backdrop {
+                background: #000a;
+            }
+            dialog label.f {
+                margin-top: 8px;
+            }
+            .btns {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+                margin-top: 16px;
+            }
+            #toast {
+                position: fixed;
+                left: 50%;
+                bottom: 24px;
+                transform: translateX(-50%);
+                background: var(--fg);
+                color: var(--bg);
+                padding: 9px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.25s;
+                z-index: 99;
+            }
+            #toast.on {
+                opacity: 1;
+            }
+            .drop {
+                border: 1px dashed var(--line);
+                padding: 28px;
+                text-align: center;
+                border-radius: 4px;
+                transition: border-color 0.2s, background 0.2s;
+            }
+            .drop.over {
+                border-color: var(--acc);
+                background: #0a7ea412;
+            }
+            /* dive */
+            .hud {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                font-size: 14px;
+                color: var(--mut);
+            }
+            .hud b {
+                font-size: 30px;
+                color: var(--fg);
+                font-variant-numeric: tabular-nums;
+            }
+            .hud button {
+                background: none;
+                border: 0;
+                color: var(--mut);
+                cursor: pointer;
+                font-size: 18px;
+            }
+            .tbar {
+                height: 4px;
+                background: var(--line);
+                margin: 8px 0 28px;
+            }
+            .tbar i {
+                display: block;
+                height: 100%;
+                width: 100%;
+                background: var(--acc);
+            }
+            .tbar.low i {
+                background: var(--bad);
+            }
+            .q {
+                font-size: clamp(22px, 4.5vw, 30px);
+                line-height: 1.25;
+                margin: 6px 0 22px;
+            }
+            .opts {
+                display: grid;
+                gap: 10px;
+            }
+            button.opt {
+                background: var(--card);
+                color: var(--fg);
+                text-align: left;
+                border-color: var(--line);
+            }
+            button.opt:hover:not(:disabled) {
+                border-color: var(--acc);
+                transform: translateX(3px);
+            }
+            button.opt.c {
+                border-color: var(--ok);
+                background: #34d39922;
+            }
+            button.opt.w {
+                border-color: var(--bad);
+                background: #fb923c22;
+            }
+            .fb {
+                margin-top: 22px;
+                animation: pop 0.35s;
+            }
+            .tier {
+                font-size: 34px;
+                font-weight: 800;
+                letter-spacing: -0.01em;
+            }
+            .fb img,
+            .qimg {
+                max-width: 100%;
+                max-height: 220px;
+                margin: 0 0 16px;
+                border-radius: 4px;
+            }
+            @keyframes pop {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px) scale(0.97);
+                }
+            }
+            .bub {
+                position: fixed;
+                bottom: -30px;
+                border-radius: 50%;
+                border: 1px solid #ffffff33;
+                pointer-events: none;
+                animation: rise linear infinite;
+            }
+            #app {
+                position: relative;
+                z-index: 1;
+            }
+            #ans {
+                position: relative;
+                z-index: 2;
+                display: block;
+                pointer-events: auto;
+                user-select: text;
+                -webkit-user-select: text;
+                opacity: 1;
+                cursor: text;
+            }
+            #ans:disabled {
+                cursor: not-allowed;
+            }
+            @keyframes rise {
+                to {
+                    transform: translateY(-115vh);
+                }
+            }
+            .desc {
+                text-align: center;
+                padding-top: 25vh;
+                animation: pop 0.6s;
+            }
+            .desc p {
+                letter-spacing: 0.3em;
+                animation: pulse 1s infinite alternate;
+            }
+            .ring {
+                width: 46px;
+                height: 46px;
+                margin: 0 auto 22px;
+                border: 2px solid var(--acc);
+                border-radius: 50%;
+                animation: sink 1.7s ease-in forwards;
+            }
+            @keyframes sink {
+                to {
+                    transform: translateY(50px) scale(0.3);
+                    opacity: 0;
+                }
+            }
+            @keyframes pulse {
+                from {
+                    opacity: 0.25;
+                }
+            }
+
+            /* ===== CONTINUOUS UNDERWATER DESCENT ===== */
+            body.sea {
+                overflow-x: hidden;
+                background: #07527e;
+            }
+
+            body:not(.sea) #oceanScene,
+            body:not(.sea) #depthRuler {
+                display: none;
+            }
+
+            #oceanScene {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                overflow: hidden;
+                pointer-events: none;
+                opacity: 1;
+                background: linear-gradient(to bottom, #087db1, #06345b 75%, #031629);
+                transition: background 4s ease;
+            }
+
+            .ocean-layer {
+                position: absolute;
+                inset: -100%;
+                width: 300%;
+                height: 300%;
+                pointer-events: none;
+                will-change: transform;
+            }
+
+            #oceanLight {
+                background:
+                    radial-gradient(ellipse at 50% 0%, #a8efff55 0%, transparent 48%),
+                    linear-gradient(180deg, #5bd5f055 0%, transparent 55%);
+                opacity: 0.9;
+            }
+
+            #oceanRays {
+                background: repeating-conic-gradient(
+                    from -12deg at 50% 0%,
+                    transparent 0deg 7deg,
+                    #b7f3ff12 8deg 9deg,
+                    transparent 10deg 17deg
+                );
+                opacity: 0.8;
+                filter: blur(5px);
+            }
+
+            #oceanMid {
+                background:
+                    radial-gradient(ellipse at 20% 45%, #087eaa20, transparent 35%),
+                    radial-gradient(ellipse at 80% 65%, #064e8525, transparent 40%),
+                    linear-gradient(180deg, transparent, #00152d66);
+            }
+
+            #oceanDeep {
+                background:
+                    radial-gradient(ellipse at 50% 55%, #06233b33, transparent 55%),
+                    linear-gradient(180deg, transparent, #000711);
+                opacity: 0.4;
+            }
+
+            #oceanFloor {
+                background:
+                    radial-gradient(ellipse at 50% 100%, #063b5050, transparent 45%),
+                    linear-gradient(180deg, transparent 60%, #01050c);
+                opacity: 0.6;
+            }
+
+            #oceanParticles {
+                position: absolute;
+                inset: 0;
+                overflow: hidden;
+            }
+
+            .ocean-particle {
+                position: absolute;
+                bottom: -20px;
+                border-radius: 50%;
+                background: #b9efff;
+                opacity: 0.35;
+                box-shadow: 0 0 8px #7ddcff;
+                animation: oceanRise linear infinite;
+            }
+
+            @keyframes oceanRise {
+                0% {
+                    transform: translate3d(0, 0, 0);
+                    opacity: 0;
+                }
+                15% {
+                    opacity: 0.35;
+                }
+                85% {
+                    opacity: 0.2;
+                }
+                100% {
+                    transform: translate3d(35px, -115vh, 0);
+                    opacity: 0;
+                }
+            }
+
+            /* Ocean atmosphere */
+            #oceanScene.zone-surface {
+                background: linear-gradient(180deg, #0788c2, #07517d 65%, #062c4b);
+            }
+
+            #oceanScene.zone-twilight {
+                background: linear-gradient(180deg, #064d7a, #052b50 60%, #031a34);
+            }
+
+            #oceanScene.zone-midnight {
+                background: linear-gradient(180deg, #031a36, #041124 60%, #020a18);
+            }
+
+            #oceanScene.zone-abyssal {
+                background: linear-gradient(180deg, #020e20, #010817 60%, #00040c);
+            }
+
+            #oceanScene.zone-hadal {
+                background: radial-gradient(ellipse at 50% 65%, #062b3c 0%, #010711 50%, #000208 100%);
+            }
+
+            #oceanScene.zone-twilight #oceanLight,
+            #oceanScene.zone-midnight #oceanLight,
+            #oceanScene.zone-abyssal #oceanLight,
+            #oceanScene.zone-hadal #oceanLight {
+                opacity: 0;
+            }
+
+            #oceanScene.zone-twilight #oceanRays {
+                opacity: 0.3;
+            }
+
+            #oceanScene.zone-midnight #oceanRays,
+            #oceanScene.zone-abyssal #oceanRays,
+            #oceanScene.zone-hadal #oceanRays {
+                opacity: 0;
+            }
+
+            #oceanScene.zone-abyssal #oceanDeep,
+            #oceanScene.zone-hadal #oceanDeep {
+                opacity: 0.9;
+            }
+
+            #oceanScene.zone-hadal #oceanFloor {
+                opacity: 1;
+            }
+
+            /* Fixed depth ruler */
+            #depthRuler {
+                position: fixed;
+                z-index: 5;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 76px;
+                height: min(420px, 65vh);
+                pointer-events: none;
+                color: #d7f5ff;
+                text-shadow: 0 1px 5px #000;
+            }
+
+            .ruler-heading {
+                text-align: center;
+                font-size: 10px;
+                letter-spacing: 0.12em;
+                margin-bottom: 12px;
+                opacity: 0.8;
+            }
+
+            .ruler-window {
+                height: 100%;
+                position: relative;
+                overflow: hidden;
+                mask-image: linear-gradient(
+                    to bottom,
+                    transparent,
+                    black 12%,
+                    black 88%,
+                    transparent
+                );
+            }
+
+            .ruler-track {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 50%;
+                will-change: transform;
+            }
+
+            .ruler-tick {
+                height: 56px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 8px;
+                font-size: 10px;
+                opacity: 0.55;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .ruler-tick i {
+                display: block;
+                width: 12px;
+                height: 1px;
+                background: #c7efff;
+            }
+
+            .ruler-tick.major i {
+                width: 23px;
+                height: 2px;
+                opacity: 1;
+            }
+
+            .ruler-marker {
+                position: absolute;
+                top: 50%;
+                left: -5px;
+                right: -2px;
+                transform: translateY(-50%);
+                height: 2px;
+                background: #4ce4ff;
+                box-shadow: 0 0 12px #4ce4ff;
+            }
+
+            .ruler-marker::before {
+                content: "";
+                position: absolute;
+                left: -2px;
+                top: -4px;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #4ce4ff;
+                box-shadow: 0 0 12px #4ce4ff;
+            }
+
+            .ruler-depth {
+                text-align: right;
+                font-size: 17px;
+                font-weight: 800;
+                color: #8cecff;
+                margin-top: 10px;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .ruler-zone {
+                text-align: right;
+                font-size: 9px;
+                letter-spacing: 0.13em;
+                text-transform: uppercase;
+                opacity: 0.75;
+            }
+
+            /* Keep the interface above the ocean */
+            header,
+            main {
+                position: relative;
+                z-index: 2;
+            }
+
+            #app {
+                position: relative;
+                z-index: 2;
+            }
+
+            #toast {
+                z-index: 10;
+            }
+
+            /* Better readability in deep water */
+            body.sea header {
+                border-color: #ffffff25;
+            }
+
+            body.sea .logo {
+                color: #e6f7ff;
+            }
+
+            body.sea nav a,
+            body.sea nav button {
+                color: #a8c8db;
+            }
+
+            body.sea nav a.on {
+                color: #ffffff;
+            }
+
+            body.sea .stat b {
+                color: #e6f7ff;
+            }
+
+            body.sea .q {
+                text-shadow: 0 2px 12px #0005;
+            }
+
+            @media (max-width: 500px) {
+                #depthRuler {
+                    right: 5px;
+                    width: 58px;
+                    opacity: 0.85;
+                }
+
+                main {
+                    padding-right: 48px;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .ocean-particle {
+                    animation: none;
+                }
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <a class="logo" href="#home">TRENCH</a>
+            <nav id="nav"></nav>
+        </header>
+        <main id="app"></main>
+        <div id="toast"></div>
+        <script>
+            // DOM helpers & safe localStorage wrapper
+            const $ = (s) => document.querySelector(s),
+                app = $("#app");
+            const LS = {
+                get(k, d) {
+                    try {
+                        const v = localStorage.getItem(k);
+                        return v ? JSON.parse(v) : d;
+                    } catch (e) {
+                        return d;
+                    }
+                },
+                set(k, v) {
+                    try {
+                        localStorage.setItem(k, JSON.stringify(v));
+                        return true;
+                    } catch (e) {
+                        toast("Could not save: storage full or blocked");
+                        return false;
+                    }
+                },
+            };
+
+            // GCSE sample pack across core subjects & exam boards
+            const SAMPLE_PACK = [
+                {
+                    id: "gcse_bio_1",
+                    subject: "Biology",
+                    board: "AQA",
+                    topic: "Cell biology",
+                    subtopic: "Osmosis",
+                    difficulty: "easy",
+                    type: "fill",
+                    marks: 1,
+                    text: "Osmosis is the net movement of ___ molecules across a partially permeable membrane from a region of higher water concentration to lower.",
+                    answer: "water",
+                    explain: "Osmosis specifically describes water movement across a partially permeable membrane.",
+                    sets: ["GCSE Sample"],
+                    fav: true,
+                },
+                {
+                    id: "gcse_bio_2",
+                    subject: "Biology",
+                    board: "AQA",
+                    topic: "Infection & response",
+                    subtopic: "Pathogens",
+                    difficulty: "medium",
+                    type: "mc",
+                    marks: 1,
+                    text: "Which type of pathogen reproduces inside host cells and causes cell damage?",
+                    options: ["Virus", "Bacterium", "Fungus", "Protist"],
+                    answer: "Virus",
+                    explain: "Viruses replicate inside host cells, damaging or bursting them.",
+                    sets: ["GCSE Sample"],
+                    fav: false,
+                },
+                {
+                    id: "gcse_chem_1",
+                    subject: "Chemistry",
+                    board: "AQA",
+                    topic: "Atomic structure",
+                    subtopic: "Ions",
+                    difficulty: "easy",
+                    type: "short",
+                    marks: 2,
+                    text: "What charge does a Group 1 metal atom form when it loses one electron?",
+                    answer: "+1|1+|positive 1|plus 1",
+                    explain: "Losing one negatively charged electron leaves one extra proton (+1).",
+                    sets: ["GCSE Sample"],
+                    fav: false,
+                },
+                {
+                    id: "gcse_chem_2",
+                    subject: "Chemistry",
+                    board: "Edexcel",
+                    topic: "Rates of reaction",
+                    subtopic: "Collision theory",
+                    difficulty: "hard",
+                    type: "extended",
+                    marks: 4,
+                    text: "Explain how increasing the concentration of a reactant in solution increases the rate of reaction.",
+                    answer: "More reacting particles in the same volume leads to more frequent successful collisions per second.",
+                    model: "Increasing concentration means there are more reacting particles in the same volume of solution. This increases the frequency of collisions between particles (and more frequent collisions with energy >= activation energy), increasing the rate of reaction.",
+                    explain: "State 'more particles in the same volume' and 'more frequent collisions'.",
+                    sets: ["GCSE Sample"],
+                    fav: true,
+                },
+                {
+                    id: "gcse_phys_1",
+                    subject: "Physics",
+                    board: "AQA",
+                    topic: "Energy",
+                    subtopic: "Kinetic energy",
+                    difficulty: "medium",
+                    type: "tf",
+                    marks: 1,
+                    text: "Doubling the speed of an object doubles its kinetic energy.",
+                    answer: "false",
+                    explain: "Ek = 0.5 * m * v^2, so doubling speed quadruples kinetic energy.",
+                    sets: ["GCSE Sample"],
+                    fav: false,
+                },
+                {
+                    id: "gcse_phys_2",
+                    subject: "Physics",
+                    board: "OCR",
+                    topic: "Electricity",
+                    subtopic: "Resistance",
+                    difficulty: "medium",
+                    type: "short",
+                    marks: 2,
+                    text: "Calculate the potential difference across a 5 Ω resistor carrying a current of 3 A (include unit).",
+                    answer: "15 V|15v|15 volts|15",
+                    explain: "V = I × R = 3 A × 5 Ω = 15 V.",
+                    sets: ["GCSE Sample"],
+                    fav: false,
+                },
+                {
+                    id: "gcse_math_1",
+                    subject: "Maths",
+                    board: "Edexcel",
+                    topic: "Algebra",
+                    subtopic: "Factorising",
+                    difficulty: "medium",
+                    type: "short",
+                    marks: 2,
+                    text: "Factorise x² + 7x + 10.",
+                    answer: "(x+5)(x+2)|(x+2)(x+5)|(x + 5)(x + 2)|(x + 2)(x + 5)",
+                    explain: "Two numbers multiplying to 10 and adding to 7 are +5 and +2.",
+                    sets: ["GCSE Sample"],
+                    fav: false,
+                },
+            ];
+
+            // Core application state
+            let Q = LS.get("tr_q", []),
+                S = LS.get("tr_s", { att: [], dives: [], best: 0 }),
+                G = null,
+                TM = 0,
+                I = null,
+                L = { f: {}, sort: "new", sel: new Set(), max: 150, q: "" };
+
+            const saveQ = () => LS.set("tr_q", Q),
+                saveS = () => LS.set("tr_s", S);
+
+            const esc = (s) =>
+                String(s ?? "").replace(
+                    /[&<>"]/g,
+                    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]
+                );
+
+            const norm = (s) =>
+                String(s ?? "")
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase()
+                    .replace(/&/g, " and ")
+                    .replace(/[^a-z0-9 ]/g, " ")
+                    .replace(/\s+/g, " ")
+                    .trim();
+
+            function textAnswerCorrect(answer, value) {
+                const v = norm(value);
+                if (!v) return false;
+                return String(answer ?? "")
+                    .split("|")
+                    .map(norm)
+                    .filter(Boolean)
+                    .some((a) => a === v || (a.length >= 4 && ` ${v} `.includes(` ${a} `)));
+            }
+
+            const uid = () => Math.random().toString(36).slice(2, 10),
+                pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+
+            const TIERS = [
+                    ["Shallows", 10],
+                    ["Drifter", 15],
+                    ["Shoal", 30],
+                    ["Reef", 60],
+                    ["Trench", 85],
+                    ["Leviathan", 100],
+                ],
+                TCOL = ["#7dd3fc", "#a5b4fc", "#5eead4", "#4ade80", "#fbbf24", "#f472b6"];
+
+            function toast(m) {
+                const t = $("#toast");
+                if (!t) return;
+                t.textContent = m;
+                t.classList.add("on");
+                clearTimeout(toast.h);
+                toast.h = setTimeout(() => t.classList.remove("on"), 2600);
+            }
+
+            let ac;
+            function beep(f, d = 0.14, ty = "sine", v = 0.07, at = 0) {
+                if (LS.get("tr_mute", false)) return;
+                try {
+                    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+                    if (ac.state === "suspended") ac.resume();
+                    const o = ac.createOscillator(),
+                        g = ac.createGain(),
+                        n = ac.currentTime + at;
+                    o.type = ty;
+                    o.frequency.value = f;
+                    g.gain.setValueAtTime(v, n);
+                    g.gain.exponentialRampToValueAtTime(0.0001, n + d);
+                    o.connect(g);
+                    g.connect(ac.destination);
+                    o.start(n);
+                    o.stop(n + d);
+                } catch (e) {}
+            }
+
+            function modal(html, get) {
+                return new Promise((res) => {
+                    const d = document.createElement("dialog");
+                    d.innerHTML =
+                        html +
+                        '<div class="btns"><button class="ghost" data-v="cancel">Cancel</button><button class="pri" data-v="ok">OK</button></div>';
+                    document.body.append(d);
+                    d.onclick = (e) => {
+                        const v = e.target.dataset && e.target.dataset.v;
+                        if (!v) return;
+                        let r = true;
+                        if (v === "ok" && get) {
+                            r = get(d);
+                            if (r === undefined) return;
+                        }
+                        d.close();
+                        d.remove();
+                        res(v === "ok" ? r : null);
+                    };
+                    d.oncancel = (e) => {
+                        e.preventDefault();
+                        d.close();
+                        d.remove();
+                        res(null);
+                    };
+                    d.showModal();
+                });
+            }
+
+            const go = (h) => (location.hash === "#" + h ? route() : (location.hash = h));
+
+            /* ---------- router ---------- */
+            const routes = { home, play, library, import: imp, stats };
+            function route() {
+                const r = location.hash.slice(1) || "home";
+                clearInterval(TM);
+                document.body.className = r === "play" ? "sea" : "";
+                document.body.style.background = "";
+                document.querySelectorAll(".bub").forEach((b) => b.remove());
+                $("#nav").innerHTML =
+                    [
+                        ["home", "Dive"],
+                        ["library", "Questions"],
+                        ["import", "Import"],
+                        ["stats", "My stats"],
+                    ]
+                        .map(([h, n]) => `<a href="#${h}" class="${r === h ? "on" : ""}">${n}</a>`)
+                        .join("") + `<button id="mute">${LS.get("tr_mute", false) ? "Sound off" : "Sound on"}</button>`;
+                $("#mute").onclick = () => {
+                    LS.set("tr_mute", !LS.get("tr_mute", false));
+                    route();
+                };
+                (routes[r] || home)();
+            }
+            addEventListener("hashchange", route);
+
+            /* ---------- selection & spacing/mastery ---------- */
+            const pool = (f) =>
+                Q.filter(
+                    (q) =>
+                        (!f.subject || q.subject === f.subject) &&
+                        (!f.board || q.board === f.board) &&
+                        (!f.topic || q.topic === f.topic) &&
+                        (!f.subtopic || q.subtopic === f.subtopic) &&
+                        (!f.difficulty || q.difficulty === f.difficulty) &&
+                        (!f.set || (f.set === "★" ? q.fav : (q.sets || []).includes(f.set)))
+                );
+
+            const lastBy = () => {
+                    const m = {};
+                    S.att.forEach((a) => (m[a.q] ??= []).push(a));
+                    return m;
+                },
+                mastered = (h) => h && h.length >= 3 && h.slice(-3).every((a) => a.ok);
+
+            function pick(p, n) {
+                const m = lastBy();
+                return p
+                    .map((q) => {
+                        const h = m[q.id] || [],
+                            l = h[h.length - 1];
+                        let k = l ? l.ts : 0;
+                        if (l && !l.ok) k -= 2e12;
+                        if (mastered(h)) k += 1e13;
+                        return [k + Math.random() * 3e8, q.id];
+                    })
+                    .sort((a, b) => a[0] - b[0])
+                    .slice(0, n)
+                    .map((x) => x[1])
+                    .sort(() => Math.random() - 0.5);
+            }
+
+            /* ===== CONTINUOUS DESCENT ENGINE ===== */
+            let currentDepth = 0;
+            let targetDepth = 0;
+            let oceanFrame = null;
+
+            const OCEAN_ZONES = [
+                { name: "Surface", cls: "zone-surface", min: 0 },
+                { name: "Twilight", cls: "zone-twilight", min: 200 },
+                { name: "Midnight", cls: "zone-midnight", min: 1000 },
+                { name: "Abyssal", cls: "zone-abyssal", min: 4000 },
+                { name: "Hadal", cls: "zone-hadal", min: 6000 },
+            ];
+
+            function getOceanZone(depth) {
+                return [...OCEAN_ZONES].reverse().find((z) => depth >= z.min) || OCEAN_ZONES[0];
+            }
+
+            function createOcean() {
+                if (!$("#oceanScene")) {
+                    const scene = document.createElement("div");
+                    scene.id = "oceanScene";
+
+                    scene.innerHTML = `
+                        <div id="oceanLight" class="ocean-layer"></div>
+                        <div id="oceanRays" class="ocean-layer"></div>
+                        <div id="oceanMid" class="ocean-layer"></div>
+                        <div id="oceanDeep" class="ocean-layer"></div>
+                        <div id="oceanFloor" class="ocean-layer"></div>
+                        <div id="oceanParticles"></div>
+                    `;
+
+                    document.body.prepend(scene);
+
+                    const particles = $("#oceanParticles");
+                    for (let i = 0; i < 38; i++) {
+                        const p = document.createElement("span");
+                        p.className = "ocean-particle";
+
+                        const size = 2 + Math.random() * 3;
+                        p.style.cssText = `
+                            left:${Math.random() * 100}%;
+                            width:${size}px;
+                            height:${size}px;
+                            animation-duration:${12 + Math.random() * 24}s;
+                            animation-delay:-${Math.random() * 30}s;
+                        `;
+
+                        particles.append(p);
+                    }
+                }
+
+                if (!$("#depthRuler")) {
+                    const ruler = document.createElement("div");
+                    ruler.id = "depthRuler";
+
+                    ruler.innerHTML = `
+                        <div class="ruler-heading">DEPTH</div>
+                        <div class="ruler-window">
+                            <div class="ruler-track" id="rulerTrack"></div>
+                            <div class="ruler-marker"></div>
+                        </div>
+                        <div class="ruler-depth" id="rulerDepth">0 m</div>
+                        <div class="ruler-zone" id="rulerZone">SURFACE</div>
+                    `;
+
+                    document.body.append(ruler);
+                }
+            }
+
+            function sea() {
+                createOcean();
+                if (G) {
+                    targetDepth = G.score * 10;
+                }
+                if (oceanFrame === null) {
+                    oceanFrame = requestAnimationFrame(animateOcean);
+                }
+            }
+
+            function animateOcean() {
+                const scene = $("#oceanScene");
+
+                if (!scene) {
+                    oceanFrame = null;
+                    return;
+                }
+
+                const difference = targetDepth - currentDepth;
+                currentDepth += difference * 0.045;
+
+                if (Math.abs(difference) < 0.05) {
+                    currentDepth = targetDepth;
+                }
+
+                const depth = currentDepth;
+                const zone = getOceanZone(depth);
+
+                OCEAN_ZONES.forEach((z) => scene.classList.remove(z.cls));
+                scene.classList.add(zone.cls);
+
+                const movement = depth * 0.22;
+                const layers = [
+                    ["oceanLight", 0.08],
+                    ["oceanRays", 0.12],
+                    ["oceanMid", 0.25],
+                    ["oceanDeep", 0.42],
+                    ["oceanFloor", 0.65],
+                ];
+
+                layers.forEach(([id, speed]) => {
+                    const layer = $("#" + id);
+                    if (layer) {
+                        const offset = movement * speed;
+                        layer.style.transform = `translate3d(0,${-offset}px,0)`;
+                    }
+                });
+
+                const formatted = Math.round(depth).toLocaleString("en-GB");
+
+                const depthDisplay = $("#rulerDepth");
+                if (depthDisplay) depthDisplay.textContent = formatted + " m";
+
+                const zoneDisplay = $("#rulerZone");
+                if (zoneDisplay) zoneDisplay.textContent = zone.name;
+
+                const hud = $("#dep");
+                if (hud) hud.textContent = formatted + " m";
+
+                const track = $("#rulerTrack");
+                if (track) {
+                    const base = Math.floor(depth / 100) * 100;
+                    const remainder = depth % 100;
+
+                    track.innerHTML = Array.from({ length: 9 }, (_, i) => {
+                        const value = base + (i - 4) * 100;
+                        const major = value % 500 === 0;
+
+                        return `
+                            <div class="ruler-tick ${major ? "major" : ""}">
+                                <span>${value >= 0 ? value.toLocaleString("en-GB") : ""}</span>
+                                <i></i>
+                            </div>
+                        `;
+                    }).join("");
+
+                    track.style.transform = `translateY(calc(-50% - ${remainder * 0.56}px))`;
+                }
+
+                oceanFrame = requestAnimationFrame(animateOcean);
+            }
+
+            function startDive(f, n = 7) {
+                const p = pool(f);
+                if (!p.length) return toast("No questions match those filters");
+
+                currentDepth = 0;
+                targetDepth = 0;
+
+                G = {
+                    ids: pick(p, n),
+                    i: 0,
+                    score: 0,
+                    res: [],
+                    f: { ...f },
+                    intro: 0,
+                };
+
+                saveSess();
+                go("play");
+            }
+
+            const saveSess = () =>
+                G
+                    ? LS.set("tr_sess", {
+                          ids: G.ids,
+                          i: G.i,
+                          score: G.score,
+                          res: G.res,
+                          f: G.f,
+                          intro: G.intro,
+                      })
+                    : null;
+
+            const vals = (k) => [...new Set(Q.map((q) => q[k]).filter(Boolean))].sort();
+            const optsHtml = (arr, sel) =>
+                `<option value="">All</option>` +
+                arr.map((x) => `<option ${x === sel ? "selected" : ""}>${esc(x)}</option>`).join("");
+
+            function loadSamplePack() {
+                const existing = new Set(Q.map((q) => q.id));
+                let count = 0;
+                SAMPLE_PACK.forEach((item) => {
+                    Q.push({ ...item, id: existing.has(item.id) ? uid() : item.id });
+                    count++;
+                });
+                saveQ();
+                toast(`Loaded ${count} GCSE sample questions`);
+                route();
+            }
+
+
+            /* ---------- GitHub / question-sets folder auto-loader ---------- */
+            const QUESTION_SETS_DIR = "question-sets";
+            const SYNCED_SET_PREFIX = "repo_set:";
+
+            function setNameFromCsvPath(filePath) {
+                const clean = String(filePath || "").split("?")[0].split("#")[0];
+                const base = clean.split("/").pop() || "Question Set";
+                return decodeURIComponent(base.replace(/\.csv$/i, "")).replace(/[_-]+/g, " ").trim() || "Question Set";
+            }
+
+            async function discoverCsvFilesInFolder() {
+                const discovered = new Set();
+
+                // 1. Check question-sets/manifest.json (recommended for GitHub Pages / static hosting)
+                try {
+                    const mRes = await fetch(`${QUESTION_SETS_DIR}/manifest.json`, { cache: "no-store" });
+                    if (mRes.ok) {
+                        const mData = await mRes.json();
+                        const list = Array.isArray(mData) ? mData : (Array.isArray(mData?.files) ? mData.files : []);
+                        list.forEach((entry) => {
+                            const name = typeof entry === "string" ? entry : entry?.file || entry?.path || entry?.name;
+                            if (name && String(name).toLowerCase().endsWith(".csv")) {
+                                const rel = String(name).replace(/^\.?\//, "");
+                                discovered.add(rel.startsWith(QUESTION_SETS_DIR + "/") ? rel : `${QUESTION_SETS_DIR}/${rel}`);
+                            }
+                        });
+                    }
+                } catch (e) {}
+
+                // 2. Also attempt directory listing if served by a local dev server that exposes directory HTML
+                try {
+                    const dRes = await fetch(`${QUESTION_SETS_DIR}/`, { cache: "no-store" });
+                    if (dRes.ok && (dRes.headers.get("content-type") || "").includes("text/html")) {
+                        const htmlText = await dRes.text();
+                        const hrefMatches = [...htmlText.matchAll(/href=["']([^"']+\.csv)["']/gi)];
+                        hrefMatches.forEach((m) => {
+                            const rawHref = m[1].split("?")[0];
+                            if (!rawHref || rawHref.startsWith("http")) return;
+                            const clean = rawHref.replace(/^\.?\//, "");
+                            discovered.add(clean.startsWith(QUESTION_SETS_DIR + "/") ? clean : `${QUESTION_SETS_DIR}/${clean}`);
+                        });
+                    }
+                } catch (e) {}
+
+                return [...discovered];
+            }
+
+            async function syncQuestionSetsFromFolder(silent = false) {
+                const files = await discoverCsvFilesInFolder();
+                if (!files.length) {
+                    if (!silent) toast("No CSV files found in question-sets/manifest.json or directory listing");
+                    return 0;
+                }
+
+                const loadedItems = [];
+                for (const filePath of files) {
+                    try {
+                        const res = await fetch(filePath, { cache: "no-store" });
+                        if (!res.ok) continue;
+                        const csvText = await res.text();
+                        const defaultSet = setNameFromCsvPath(filePath);
+                        const parsed = parseTextBlock(csvText, defaultSet);
+                        parsed.forEach((item, i) => {
+                            const tagSet = (item.sets && item.sets.length) ? item.sets : [defaultSet];
+                            loadedItems.push({
+                                ...item,
+                                id: item.id && String(item.id).trim()
+                                    ? `repo_${defaultSet.toLowerCase().replace(/[^a-z0-9]+/g, "_")}_${String(item.id).trim()}`
+                                    : `repo_${defaultSet.toLowerCase().replace(/[^a-z0-9]+/g, "_")}_${i}`,
+                                sets: tagSet,
+                                _repoSource: `${SYNCED_SET_PREFIX}${filePath}`,
+                            });
+                        });
+                    } catch (e) {}
+                }
+
+                if (!loadedItems.length) {
+                    if (!silent) toast("CSV files in question-sets/ were empty or invalid");
+                    return 0;
+                }
+
+                // Preserve user edits/tags/favourites on matching repo items where possible
+                const existingById = new Map(Q.map((item) => [item.id, item]));
+                const manualQuestions = Q.filter((item) => !String(item._repoSource || "").startsWith(SYNCED_SET_PREFIX));
+
+                const mergedRepo = loadedItems.map((fresh) => {
+                    const prev = existingById.get(fresh.id);
+                    if (!prev) return fresh;
+                    const mergedSets = Array.from(new Set([
+                        ...(fresh.sets || []),
+                        ...((prev.sets || []).filter((s) => s === "Needs practice")),
+                    ]));
+                    return {
+                        ...fresh,
+                        fav: typeof prev.fav === "boolean" ? prev.fav : fresh.fav,
+                        sets: mergedSets,
+                    };
+                });
+
+                Q = [...mergedRepo, ...manualQuestions];
+                saveQ();
+                if (!silent) toast(`Synced ${mergedRepo.length} question(s) from ${files.length} CSV file(s)`);
+                return mergedRepo.length;
+            }
+
+            /* ---------- home ---------- */
+            function home() {
+                const f = LS.get("tr_f", {}),
+                    sess = LS.get("tr_sess", null),
+                    sets = [...new Set(Q.flatMap((q) => q.sets || []))];
+                if (!Q.length) {
+                    app.innerHTML = `<h1>Dive in.</h1>
+                        <p class="sub">Your question bank is empty. Import your GCSE questions (CSV, Excel, JSON or pasted text) and the dive starts from them.</p>
+                        <div class="row">
+                            <a href="#import"><button class="pri">Import questions</button></a>
+                            <button class="ghost" id="sample_home">Load GCSE sample pack</button>
+                        </div>`;
+                    $("#sample_home").onclick = loadSamplePack;
+                    return;
+                }
+                const sel = (k, l, a) =>
+                    `<label class="f">${l}<select data-k="${k}">${optsHtml(a, f[k])}</select></label>`;
+                app.innerHTML = `<h1>Dive in.</h1><p class="sub">Seven prompts, 25 seconds each. Correct, fast answers to harder questions sink you deeper.</p>
+                    <div class="grid">
+                        ${sel("subject", "Subject", vals("subject"))}
+                        ${sel("board", "Exam board", vals("board"))}
+                        ${sel("topic", "Topic", vals("topic"))}
+                        ${sel("subtopic", "Subtopic", vals("subtopic"))}
+                        <label class="f">Difficulty<select data-k="difficulty">${optsHtml(["easy", "medium", "hard"], f.difficulty)}</select></label>
+                        ${sel("set", "Question set", ["★", ...sets])}
+                        <label class="f">Questions<select data-k="n">${[7, 10, 15, 20].map((x) => `<option ${x === (f.n || 7) ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+                    </div>
+                    <div class="row">
+                        <button class="pri" id="go">Start dive</button>
+                        ${sess && sess.i < sess.ids.length ? `<button class="ghost" id="res">Resume (${sess.i}/${sess.ids.length})</button>` : ""}
+                        <small id="cnt"></small>
+                    </div>
+                    <div class="stat">
+                        <div><b>${S.best * 10} m</b><small>deepest dive</small></div>
+                        <div><b>${S.att.length}</b><small>answered</small></div>
+                        <div><b>${pct(S.att.filter((a) => a.ok).length, S.att.length)}%</b><small>accuracy</small></div>
+                    </div>`;
+                const cnt = () => ($("#cnt").textContent = pool(f).length + " questions in pool");
+                cnt();
+                app.querySelectorAll("select").forEach(
+                    (s) =>
+                        (s.onchange = () => {
+                            f[s.dataset.k] = s.dataset.k === "n" ? +s.value : s.value;
+                            LS.set("tr_f", f);
+                            cnt();
+                        })
+                );
+                $("#go").onclick = () => startDive(f, +f.n || 7);
+                const r = $("#res");
+                if (r)
+                    r.onclick = () => {
+                        G = sess;
+                        currentDepth = (G.score || 0) * 10;
+                        targetDepth = currentDepth;
+                        go("play");
+                    };
+            }
+
+            /* ---------- play ---------- */
+            function play() {
+                if (!G && !(G = LS.get("tr_sess", null))) return (location.hash = "home");
+                currentDepth = (G.score || 0) * 10;
+                targetDepth = currentDepth;
+                sea();
+                for (let i = 0; i < 14; i++) {
+                    const b = document.createElement("span");
+                    b.className = "bub";
+                    const s = 4 + Math.random() * 12;
+                    b.style.cssText = `left:${Math.random() * 100}vw;width:${s}px;height:${s}px;animation-duration:${8 + Math.random() * 12}s;animation-delay:-${Math.random() * 14}s`;
+                    document.body.append(b);
+                }
+                if (G.i >= G.ids.length) return finish();
+                if (G.i === 0 && !G.res.length && !G.intro) {
+                    G.intro = 1;
+                    saveSess();
+                    app.innerHTML = '<div class="desc"><div class="ring"></div><p>descending…</p></div>';
+                    beep(180, 0.7, "sine", 0.05);
+                    setTimeout(() => {
+                        if (location.hash === "#play" && G) ask();
+                    }, 1700);
+                    return;
+                }
+                ask();
+            }
+
+            function ask() {
+                const q = Q.find((x) => x.id === G.ids[G.i]);
+                if (!q) {
+                    G.i++;
+                    saveSess();
+                    return play();
+                }
+                G.q = q;
+                G.t0 = Date.now();
+                const lim = q.type === "extended" ? 90 : 25;
+                let inp;
+                if (q.type === "mc")
+                    inp = `<div class="opts">${(q.options || []).map((o, i) => `<button class="opt" data-v="${i}">${esc(o)}</button>`).join("")}</div>`;
+                else if (q.type === "tf")
+                    inp = `<div class="opts"><button class="opt" data-v="true">True</button><button class="opt" data-v="false">False</button></div>`;
+                else
+                    inp =
+                        (q.type === "extended"
+                            ? `<textarea id="ans" rows="6" autocomplete="off" placeholder="write your answer"></textarea>`
+                            : `<input id="ans" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${q.type === "fill" ? "type the missing word or phrase" : "type your answer"}">`) +
+                        `<div class="row"><button class="pri" id="sub" type="button">Submit</button></div>`;
+                const marks = Number(q.marks) || 1;
+                app.innerHTML = `<div class="hud"><span>${G.i + 1} / ${G.ids.length}</span><b id="dep">${G.score * 10} m</b><button id="quit" title="Save and leave">✕</button></div><div class="tbar" id="tb"><i></i></div>
+                    <p class="meta">${esc([q.subject, q.topic, marks + " mark" + (marks > 1 ? "s" : "")].filter(Boolean).join(" · "))}</p>${q.image ? `<img class="qimg" src="${esc(q.image)}" alt="">` : ""}<div class="q">${esc(q.text).replace(/_{3,}/g, "<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>")}</div>${inp}<div id="fb"></div>`;
+                $("#quit").onclick = () => {
+                    clearInterval(TM);
+                    go("home");
+                };
+                app.querySelectorAll(".opt").forEach((b) => (b.onclick = () => submit(b.dataset.v)));
+                const s = $("#sub");
+                if (s) s.onclick = () => submit($("#ans").value);
+                const a = $("#ans");
+                if (a) {
+                    a.disabled = false;
+                    a.readOnly = false;
+                    a.setAttribute("aria-label", "Type your answer");
+                    a.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter" && q.type !== "extended") {
+                            e.preventDefault();
+                            submit(a.value);
+                        }
+                    });
+                    requestAnimationFrame(() => {
+                        a.focus({ preventScroll: true });
+                        a.click();
+                    });
+                }
+                clearInterval(TM);
+                TM = setInterval(() => {
+                    const left = lim - (Date.now() - G.t0) / 1000;
+                    const tb = $("#tb");
+                    if (!tb) return clearInterval(TM);
+                    $("#tb i").style.width = Math.max(0, (left / lim) * 100) + "%";
+                    tb.classList.toggle("low", left < 6);
+                    if (left <= 0) submit(null);
+                }, 100);
+            }
+
+            function syncNeedsPracticeSet(qId, needsPractice) {
+                if (!qId) return;
+                let changed = false;
+                Q = Q.map((item) => {
+                    if (item.id !== qId) return item;
+                    const currentSets = Array.isArray(item.sets) ? [...item.sets] : [];
+                    const hasTag = currentSets.includes("Needs practice");
+                    if (needsPractice && !hasTag) {
+                        changed = true;
+                        return { ...item, sets: [...currentSets, "Needs practice"] };
+                    }
+                    if (!needsPractice && hasTag) {
+                        changed = true;
+                        return { ...item, sets: currentSets.filter((s) => s !== "Needs practice") };
+                    }
+                    return item;
+                });
+                if (changed) saveQ();
+            }
+
+            function calcMarkPoints(q, t, lim, maxMarks, chosen) {
+                if (!chosen || chosen <= 0) return 0;
+                const diffFactor = q.difficulty === "hard" ? 1.4 : q.difficulty === "medium" ? 1.15 : 1;
+                const markFactor = Math.min(3, maxMarks);
+                const speedRatio = Math.max(0, Math.min(1, 1 - t / lim));
+                const ratio = Math.max(0, Math.min(1, chosen / maxMarks));
+                return Math.max(1, Math.round((50 + speedRatio * 50) * diffFactor * Math.sqrt(markFactor) * ratio));
+            }
+
+            function renderMarkSelector(maxMarks, selectedMarks, cls = "m_pick") {
+                return Array.from({ length: maxMarks + 1 }, (_, m) => {
+                    const active = m === selectedMarks ? "pri" : "ghost";
+                    return `<button class="${active} ${cls}" data-m="${m}" type="button">${m} / ${maxMarks}</button>`;
+                }).join("");
+            }
+
+            function fin(ok, t, customMarks = null) {
+                const q = G.q;
+                const lim = q.type === "extended" ? 90 : 25;
+                const maxMarks = Math.max(1, Number(q.marks) || 1);
+
+                let earned;
+                if (typeof customMarks === "number" && !Number.isNaN(customMarks)) {
+                    earned = Math.max(0, Math.min(maxMarks, customMarks));
+                } else if (ok === true) {
+                    earned = maxMarks;
+                } else {
+                    earned = 0;
+                }
+
+                const isFullMarks = earned >= maxMarks;
+                const isPositive = earned > 0;
+                const pts = calcMarkPoints(q, t, lim, maxMarks, earned);
+
+                if (isPositive) {
+                    G.score += pts;
+                    beep(587.33, 0.12, "triangle", 0.07, 0);
+                    beep(880, 0.18, "triangle", 0.07, 0.1);
+                } else {
+                    beep(196, 0.25, "sawtooth", 0.05, 0);
+                }
+
+                targetDepth = G.score * 10;
+                sea();
+
+                syncNeedsPracticeSet(q.id, !isFullMarks);
+
+                G.res.push({
+                    id: q.id,
+                    text: q.text,
+                    ok: isFullMarks,
+                    earnedMarks: earned,
+                    maxMarks,
+                    pts,
+                    t: +t.toFixed(1),
+                    answer: q.type === "extended" ? q.model || q.answer : q.answer,
+                    explain: q.explain || "",
+                });
+
+                S.att.push({
+                    q: q.id,
+                    subject: q.subject || "",
+                    topic: q.topic || "",
+                    difficulty: q.difficulty || "medium",
+                    ok: isFullMarks,
+                    earnedMarks: earned,
+                    maxMarks,
+                    pts,
+                    ts: Date.now(),
+                });
+                saveS();
+
+                G.i++;
+                saveSess();
+
+                const isLast = G.i >= G.ids.length;
+                const markLabel = `${earned}/${maxMarks} mark${maxMarks === 1 ? "" : "s"}`;
+                const practiceNote = !isFullMarks ? ` · Tagged "Needs practice"` : "";
+                $("#fb").innerHTML = `<div class="fb">
+                    <p class="${isFullMarks ? "good" : "err"}" id="fb_status"><b>${isPositive ? `Descended +${pts * 10} m (${markLabel}${practiceNote})` : `Did not descend (+0 m · ${markLabel}${practiceNote})`}</b></p>
+                    <p><small>Answer:</small> <b>${esc(q.type === "extended" ? q.model || q.answer : String(q.answer || "").split("|")[0])}</b></p>
+                    ${q.explain ? `<p class="meta">${esc(q.explain)}</p>` : ""}
+                    <div class="row" id="fb_marks"><small>Marks awarded:</small> ${renderMarkSelector(maxMarks, earned, "m_pick")}</div>
+                    <div class="row"><button class="pri" id="next">${isLast ? "Surface & see tier" : "Next prompt"}</button></div>
+                </div>`;
+
+                function applyMarkChoice(chosen, t, lim, maxMarks) {
+                    const clamped = Math.max(0, Math.min(maxMarks, chosen));
+                    const fullNow = clamped >= maxMarks;
+                    const newPts = calcMarkPoints(q, t, lim, maxMarks, clamped);
+                    const lastRes = G.res[G.res.length - 1];
+                    const oldPts = lastRes ? lastRes.pts : 0;
+
+                    G.score = Math.max(0, G.score - oldPts + newPts);
+                    targetDepth = G.score * 10;
+                    sea();
+                    const depHud = $("#dep");
+                    if (depHud) depHud.textContent = Math.round(currentDepth).toLocaleString("en-GB") + " m";
+
+                    syncNeedsPracticeSet(q.id, !fullNow);
+
+                    if (lastRes) {
+                        lastRes.ok = fullNow;
+                        lastRes.earnedMarks = clamped;
+                        lastRes.maxMarks = maxMarks;
+                        lastRes.pts = newPts;
+                    }
+
+                    const lastAtt = S.att[S.att.length - 1];
+                    if (lastAtt && lastAtt.q === q.id) {
+                        lastAtt.ok = fullNow;
+                        lastAtt.earnedMarks = clamped;
+                        lastAtt.maxMarks = maxMarks;
+                        lastAtt.pts = newPts;
+                    }
+
+                    saveS();
+                    saveSess();
+
+                    const st = $("#fb_status");
+                    const lbl = `${clamped}/${maxMarks} mark${maxMarks === 1 ? "" : "s"}`;
+                    const pNote = !fullNow ? ` · Tagged "Needs practice"` : "";
+                    if (st) {
+                        st.className = fullNow ? "good" : "err";
+                        st.innerHTML = `<b>${clamped > 0 ? `Descended +${newPts * 10} m (${lbl}${pNote})` : `Did not descend (+0 m · ${lbl}${pNote})`}</b>`;
+                    }
+                    $("#fb_marks").innerHTML = `<small>Marks awarded:</small> ${renderMarkSelector(maxMarks, clamped, "m_pick")}`;
+                    bindMarkPickers(t, lim, maxMarks);
+                }
+
+                function bindMarkPickers(t, lim, maxMarks) {
+                    $("#fb").querySelectorAll(".m_pick").forEach((b) => {
+                        b.onclick = () => applyMarkChoice(Number(b.dataset.m), t, lim, maxMarks);
+                    });
+                }
+
+                bindMarkPickers(t, lim, maxMarks);
+
+                const nxt = $("#next");
+                nxt.onclick = () => (isLast ? finish() : ask());
+                nxt.focus();
+            }
+
+            function submit(v) {
+                clearInterval(TM);
+                if (!G || !G.q) return;
+                const q = G.q,
+                    t = (Date.now() - G.t0) / 1000;
+                const maxMarks = Math.max(1, Number(q.marks) || 1);
+                let ok;
+                if (v === null) ok = q.type === "extended" ? null : false;
+                else if (q.type === "mc") ok = norm((q.options || [])[+v]) === norm(q.answer);
+                else if (q.type === "tf") ok = norm(v) === norm(q.answer);
+                else if (q.type === "extended") ok = null;
+                else ok = textAnswerCorrect(q.answer, v);
+
+                app.querySelectorAll(".opt").forEach((b) => {
+                    b.disabled = true;
+                    const val = q.type === "mc" ? (q.options || [])[+b.dataset.v] : b.dataset.v;
+                    if (norm(val) === norm(q.answer)) b.classList.add("c");
+                    else if (v !== null && b.dataset.v === v) b.classList.add("w");
+                });
+                const a = $("#ans");
+                if (a) a.disabled = true;
+                const sb = $("#sub");
+                if (sb) sb.remove();
+
+                const shown = q.type === "extended" ? q.model || q.answer : String(q.answer || "").split("|")[0];
+                if (
+                    ok === null ||
+                    (ok === false && (q.type === "short" || q.type === "fill") && v !== null && String(v).trim() !== "")
+                ) {
+                    $("#fb").innerHTML = `<div class="fb">
+                        <small>${ok === null ? `Model answer — select marks earned (out of ${maxMarks}):` : `Accepted answer — select marks earned (out of ${maxMarks}):`}</small>
+                        <p><b>${esc(shown)}</b></p>
+                        ${q.explain ? `<p class="meta">${esc(q.explain)}</p>` : ""}
+                        <div class="row">${renderMarkSelector(maxMarks, ok === null ? maxMarks : 0, "m_sel")}</div>
+                    </div>`;
+                    $("#fb").querySelectorAll(".m_sel").forEach((btn) => {
+                        btn.onclick = () => {
+                            const chosen = Number(btn.dataset.m);
+                            fin(chosen > 0, t, chosen);
+                        };
+                    });
+                    const firstPri = $("#fb .m_sel.pri");
+                    if (firstPri) firstPri.focus();
+                    return;
+                }
+
+                fin(!!ok, t, ok ? maxMarks : 0);
+            }
+
+            function getTier(score, total) {
+                const maxPossible = Math.max(1, (total || 7) * 100);
+                const ratio = pct(Math.max(0, score), maxPossible);
+                let idx = 0;
+                TIERS.forEach(([, minP], i) => {
+                    if (ratio >= minP) idx = i;
+                });
+                return { name: TIERS[idx][0], color: TCOL[idx], ratio };
+            }
+
+            function finish() {
+                clearInterval(TM);
+                const session = G;
+                G = null;
+                document.body.className = "";
+                document.body.style.background = "";
+                document.querySelectorAll(".bub").forEach((b) => b.remove());
+
+                const depth = Math.max(0, session.score * 10);
+                if (session.score > (S.best || 0)) S.best = session.score;
+                const okCount = session.res.filter((r) => r.ok).length;
+                const acc = pct(okCount, session.res.length);
+                const tier = getTier(session.score, session.ids.length);
+
+                S.dives.unshift({
+                    ts: Date.now(),
+                    score: session.score,
+                    depth,
+                    tier: tier.name,
+                    count: session.res.length,
+                    acc,
+                });
+                S.dives = S.dives.slice(0, 60);
+                saveS();
+                localStorage.removeItem("tr_sess");
+
+                beep(523.25, 0.14, "triangle", 0.07, 0);
+                beep(659.25, 0.14, "triangle", 0.07, 0.12);
+                beep(783.99, 0.25, "triangle", 0.08, 0.24);
+
+                app.innerHTML = `<div class="fb">
+                    <small>Dive complete · ${tier.ratio}% of max depth</small>
+                    <div class="tier" style="color:${tier.color}">${esc(tier.name)}</div>
+                    <div class="stat">
+                        <div><b>${depth} m</b><small>depth reached</small></div>
+                        <div><b>${okCount}/${session.res.length}</b><small>correct (${acc}%)</small></div>
+                        <div><b>${(S.best || 0) * 10} m</b><small>personal best</small></div>
+                    </div>
+                    <div class="row">
+                        <button class="pri" id="again">Dive again</button>
+                        <a href="#home"><button class="ghost">Change filters</button></a>
+                        <a href="#stats"><button class="ghost">View stats</button></a>
+                    </div>
+                    <h3>Prompt breakdown</h3>
+                    <table>
+                        <thead><tr><th>Result</th><th>Question</th><th>Answer</th><th>Marks</th><th>Depth</th></tr></thead>
+                        <tbody>
+                            ${session.res
+                                .map(
+                                    (r) => {
+                                        const mm = r.maxMarks || 1;
+                                        const em = typeof r.earnedMarks === "number" ? r.earnedMarks : (r.ok ? mm : 0);
+                                        const full = em >= mm;
+                                        return `<tr>
+                                            <td class="${full ? "good" : "err"}">${full ? "✓" : "✕"}</td>
+                                            <td>${esc(r.text)}</td>
+                                            <td>${esc(String(r.answer || "").split("|")[0])}</td>
+                                            <td>${em}/${mm}</td>
+                                            <td>+${r.pts * 10} m</td>
+                                        </tr>`;
+                                    }
+                                )
+                                .join("")}
+                        </tbody>
+                    </table>
+                </div>`;
+                $("#again").onclick = () => startDive(session.f || {}, session.ids.length || 7);
+            }
+
+            /* ---------- question add / edit modal ---------- */
+            async function openEditor(existing = null) {
+                const q = existing
+                    ? { ...existing, options: [...(existing.options || [])], sets: [...(existing.sets || [])] }
+                    : {
+                          id: uid(),
+                          subject: "",
+                          board: "",
+                          topic: "",
+                          subtopic: "",
+                          difficulty: "medium",
+                          type: "short",
+                          marks: 1,
+                          text: "",
+                          options: [],
+                          answer: "",
+                          model: "",
+                          explain: "",
+                          image: "",
+                          sets: [],
+                          fav: false,
+                      };
+
+                const res = await modal(
+                    `<h2>${existing ? "Edit question" : "Add question"}</h2>
+                    <div class="grid">
+                        <label class="f">Subject<input id="e_sub" value="${esc(q.subject)}"></label>
+                        <label class="f">Exam board<input id="e_brd" value="${esc(q.board)}"></label>
+                        <label class="f">Topic<input id="e_top" value="${esc(q.topic)}"></label>
+                        <label class="f">Subtopic<input id="e_stop" value="${esc(q.subtopic)}"></label>
+                        <label class="f">Type<select id="e_typ">
+                            ${["short", "fill", "mc", "tf", "extended"]
+                                .map((t) => `<option value="${t}" ${q.type === t ? "selected" : ""}>${t}</option>`)
+                                .join("")}
+                        </select></label>
+                        <label class="f">Difficulty<select id="e_dif">
+                            ${["easy", "medium", "hard"]
+                                .map((d) => `<option value="${d}" ${q.difficulty === d ? "selected" : ""}>${d}</option>`)
+                                .join("")}
+                        </select></label>
+                        <label class="f">Marks<input id="e_mrk" type="number" min="1" max="20" value="${Number(q.marks) || 1}"></label>
+                        <label class="f">Sets (comma-separated)<input id="e_set" value="${esc((q.sets || []).join(", "))}"></label>
+                    </div>
+                    <label class="f">Question prompt<textarea id="e_txt" rows="3">${esc(q.text)}</textarea></label>
+                    <label class="f">Multiple choice options (one per line)<textarea id="e_opt" rows="3">${esc((q.options || []).join("\n"))}</textarea></label>
+                    <label class="f">Answer (separate alternatives with |)<input id="e_ans" value="${esc(q.answer)}"></label>
+                    <label class="f">Model answer (for extended)<textarea id="e_mod" rows="2">${esc(q.model || "")}</textarea></label>
+                    <label class="f">Explanation<input id="e_exp" value="${esc(q.explain || "")}"></label>
+                    <label class="f">Image URL (optional)<input id="e_img" value="${esc(q.image || "")}"></label>`,
+                    (d) => {
+                        const text = d.querySelector("#e_txt").value.trim();
+                        const type = d.querySelector("#e_typ").value;
+                        const answer = d.querySelector("#e_ans").value.trim();
+                        const model = d.querySelector("#e_mod").value.trim();
+                        if (!text) {
+                            toast("Question prompt is required");
+                            return undefined;
+                        }
+                        if (!answer && type !== "extended" && !model) {
+                            toast("Answer is required");
+                            return undefined;
+                        }
+                        const options = d
+                            .querySelector("#e_opt")
+                            .value.split("\n")
+                            .map((s) => s.trim())
+                            .filter(Boolean);
+                        const sets = d
+                            .querySelector("#e_set")
+                            .value.split(",")
+                            .map((s) => s.trim())
+                            .filter(Boolean);
+                        return {
+                            ...q,
+                            subject: d.querySelector("#e_sub").value.trim(),
+                            board: d.querySelector("#e_brd").value.trim(),
+                            topic: d.querySelector("#e_top").value.trim(),
+                            subtopic: d.querySelector("#e_stop").value.trim(),
+                            type,
+                            difficulty: d.querySelector("#e_dif").value,
+                            marks: Math.max(1, +d.querySelector("#e_mrk").value || 1),
+                            text,
+                            options,
+                            answer: answer || model,
+                            model,
+                            explain: d.querySelector("#e_exp").value.trim(),
+                            image: d.querySelector("#e_img").value.trim(),
+                            sets,
+                        };
+                    }
+                );
+
+                if (!res) return;
+                if (existing) {
+                    Q = Q.map((item) => (item.id === existing.id ? res : item));
+                    toast("Question updated");
+                } else {
+                    Q.unshift(res);
+                    toast("Question added");
+                }
+                saveQ();
+                route();
+            }
+
+            /* ---------- library ---------- */
+            function filteredLib() {
+                const needle = norm(L.q);
+                let list = pool(L.f).filter((q) => {
+                    if (!needle) return true;
+                    return norm([q.text, q.answer, q.subject, q.topic, q.subtopic, q.board].join(" ")).includes(needle);
+                });
+                if (L.sort === "az") list = [...list].sort((a, b) => a.text.localeCompare(b.text));
+                else if (L.sort === "sub") list = [...list].sort((a, b) => (a.subject || "").localeCompare(b.subject || ""));
+                return list;
+            }
+
+            function library() {
+                const sets = [...new Set(Q.flatMap((q) => q.sets || []))];
+                const list = filteredLib();
+                const shown = list.slice(0, L.max);
+
+                app.innerHTML = `<h2>Questions (${list.length}${list.length !== Q.length ? ` of ${Q.length}` : ""})</h2>
+                    <div class="grid">
+                        <label class="f">Search<input id="l_q" value="${esc(L.q)}" placeholder="search text, topic, answer…"></label>
+                        <label class="f">Subject<select data-lk="subject">${optsHtml(vals("subject"), L.f.subject)}</select></label>
+                        <label class="f">Topic<select data-lk="topic">${optsHtml(vals("topic"), L.f.topic)}</select></label>
+                        <label class="f">Set<select data-lk="set">${optsHtml(["★", ...sets], L.f.set)}</select></label>
+                        <label class="f">Sort<select id="l_sort">
+                            <option value="new" ${L.sort === "new" ? "selected" : ""}>Newest</option>
+                            <option value="az" ${L.sort === "az" ? "selected" : ""}>A–Z</option>
+                            <option value="sub" ${L.sort === "sub" ? "selected" : ""}>Subject</option>
+                        </select></label>
+                    </div>
+                    <div class="row">
+                        <button class="pri" id="l_add">+ Add question</button>
+                        <button class="ghost" id="l_dive">Dive (${list.length})</button>
+                        <button class="ghost" id="l_exp">Export JSON</button>
+                        ${L.sel.size ? `<button class="ghost" id="l_set">Set (${L.sel.size})</button><button class="ghost" id="l_del">Delete (${L.sel.size})</button>` : ""}
+                        ${!Q.length ? `<button class="ghost" id="l_pack">Load GCSE sample pack</button>` : ""}
+                    </div>
+                    <div>
+                        ${
+                            shown.length
+                                ? shown
+                                      .map(
+                                          (q) => `<div class="item" data-id="${q.id}">
+                                              <input type="checkbox" class="l_chk" ${L.sel.has(q.id) ? "checked" : ""}>
+                                              <div class="qt">
+                                                  <b>${esc(q.text)}</b><br>
+                                                  <small>${esc([q.subject, q.topic, q.type, q.difficulty].filter(Boolean).join(" · "))}</small>
+                                              </div>
+                                              <button class="l_fav" title="Favourite">${q.fav ? "★" : "☆"}</button>
+                                              <button class="l_edit" title="Edit">Edit</button>
+                                          </div>`
+                                      )
+                                      .join("")
+                                : `<p class="meta">No questions match your filters.</p>`
+                        }
+                    </div>
+                    ${list.length > shown.length ? `<div class="row"><button class="ghost" id="l_more">Show more (${list.length - shown.length} left)</button></div>` : ""}`;
+
+                $("#l_q").oninput = (e) => {
+                    L.q = e.target.value;
+                    library();
+                };
+                app.querySelectorAll("select[data-lk]").forEach((s) => {
+                    s.onchange = () => {
+                        L.f[s.dataset.lk] = s.value;
+                        library();
+                    };
+                });
+                $("#l_sort").onchange = (e) => {
+                    L.sort = e.target.value;
+                    library();
+                };
+                $("#l_add").onclick = () => openEditor(null);
+                $("#l_dive").onclick = () => startDive(L.f, Math.min(10, Math.max(5, list.length || 7)));
+                $("#l_exp").onclick = () => {
+                    const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "trench-questions.json";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast("Exported JSON");
+                };
+                const lp = $("#l_pack");
+                if (lp) lp.onclick = loadSamplePack;
+                const lm = $("#l_more");
+                if (lm)
+                    lm.onclick = () => {
+                        L.max += 150;
+                        library();
+                    };
+
+                app.querySelectorAll(".l_chk").forEach((c) => {
+                    c.onchange = () => {
+                        const id = c.closest(".item").dataset.id;
+                        if (c.checked) L.sel.add(id);
+                        else L.sel.delete(id);
+                        library();
+                    };
+                });
+                app.querySelectorAll(".l_fav").forEach((b) => {
+                    b.onclick = () => {
+                        const id = b.closest(".item").dataset.id;
+                        Q = Q.map((q) => (q.id === id ? { ...q, fav: !q.fav } : q));
+                        saveQ();
+                        library();
+                    };
+                });
+                app.querySelectorAll(".l_edit").forEach((b) => {
+                    b.onclick = () => {
+                        const id = b.closest(".item").dataset.id;
+                        const found = Q.find((q) => q.id === id);
+                        if (found) openEditor(found);
+                    };
+                });
+                const ld = $("#l_del");
+                if (ld)
+                    ld.onclick = async () => {
+                        const ok = await modal(`<p>Delete <b>${L.sel.size}</b> selected question(s)?</p>`);
+                        if (!ok) return;
+                        Q = Q.filter((q) => !L.sel.has(q.id));
+                        L.sel.clear();
+                        saveQ();
+                        toast("Deleted selected questions");
+                        library();
+                    };
+                const ls = $("#l_set");
+                if (ls)
+                    ls.onclick = async () => {
+                        const setName = await modal(
+                            `<h2>Question set</h2><label class="f">Tag selected with set<input id="s_name" placeholder="e.g. Paper 1 Revision"></label>`,
+                            (d) => d.querySelector("#s_name").value.trim()
+                        );
+                        if (!setName) return;
+                        Q = Q.map((q) =>
+                            L.sel.has(q.id) ? { ...q, sets: [...new Set([...(q.sets || []), setName])] } : q
+                        );
+                        saveQ();
+                        toast(`Tagged ${L.sel.size} questions with "${setName}"`);
+                        library();
+                    };
+            }
+
+            /* ---------- import (CSV, Excel via SheetJS, JSON, pasted text, folders) ---------- */
+            const SUPPORTED_EXTS = [".csv", ".tsv", ".xlsx", ".xls", ".ods", ".json", ".txt"];
+
+            function isSupportedQuestionFile(name) {
+                const lower = String(name || "").toLowerCase();
+                if (!lower || lower.startsWith(".") || lower.startsWith("~$")) return false;
+                return SUPPORTED_EXTS.some((ext) => lower.endsWith(ext));
+            }
+
+            function inferSetNameFromFile(file, fallbackSet = "") {
+                if (fallbackSet) return fallbackSet;
+                const rel = String(file.webkitRelativePath || file.name || "");
+                const parts = rel.split("/").filter(Boolean);
+                if (parts.length >= 3) {
+                    return parts[parts.length - 2].replace(/[_-]+/g, " ").trim();
+                }
+                const base = (parts[parts.length - 1] || file.name || "Imported Set").replace(/\.[^.]+$/, "");
+                return base.replace(/[_-]+/g, " ").trim() || "Imported Set";
+            }
+
+            function normalizeRow(raw, idx = 0, defaultSet = "") {
+                if (!raw || typeof raw !== "object") return null;
+                const obj = {};
+                Object.keys(raw).forEach((k) => {
+                    obj[String(k).trim().toLowerCase()] = raw[k];
+                });
+
+                const text = String(obj.text || obj.question || obj.prompt || "").trim();
+                const answer = String(obj.answer || obj.ans || obj.correct || "").trim();
+                const model = String(obj.model || obj.model_answer || "").trim();
+                if (!text || (!answer && !model)) return null;
+
+                let type = String(obj.type || "short").trim().toLowerCase();
+                const rawOpts = obj.options || obj.choices || "";
+                const options = Array.isArray(rawOpts)
+                    ? rawOpts.map((x) => String(x).trim()).filter(Boolean)
+                    : String(rawOpts)
+                          .split(/\s*\|\s*|\s*;\s*/)
+                          .map((x) => x.trim())
+                          .filter(Boolean);
+
+                if (!["short", "fill", "mc", "tf", "extended"].includes(type)) {
+                    if (options.length >= 2) type = "mc";
+                    else if (["true", "false"].includes(norm(answer))) type = "tf";
+                    else if (text.includes("___")) type = "fill";
+                    else type = "short";
+                }
+
+                const diffRaw = String(obj.difficulty || obj.level || "medium").trim().toLowerCase();
+                const difficulty = ["easy", "medium", "hard"].includes(diffRaw) ? diffRaw : "medium";
+
+                const rawSets = obj.sets || obj.set || "";
+                let sets = Array.isArray(rawSets)
+                    ? rawSets.map((x) => String(x).trim()).filter(Boolean)
+                    : String(rawSets)
+                          .split(/[,;|]/)
+                          .map((x) => x.trim())
+                          .filter(Boolean);
+                if (!sets.length && defaultSet) sets = [defaultSet];
+
+                return {
+                    id: obj.id ? String(obj.id) : `imp_${Date.now()}_${idx}_${uid()}`,
+                    subject: String(obj.subject || "").trim(),
+                    board: String(obj.board || obj.exam_board || "").trim(),
+                    topic: String(obj.topic || "").trim(),
+                    subtopic: String(obj.subtopic || "").trim(),
+                    difficulty,
+                    type,
+                    marks: Math.max(1, +obj.marks || 1),
+                    text,
+                    options,
+                    answer: answer || model,
+                    model,
+                    explain: String(obj.explain || obj.explanation || obj.note || "").trim(),
+                    image: String(obj.image || obj.img || "").trim(),
+                    sets,
+                    fav: String(obj.fav || "").toLowerCase() === "true" || obj.fav === 1 || obj.fav === "1",
+                };
+            }
+
+            function parseTextBlock(rawText, defaultSet = "") {
+                const s = String(rawText || "").trim();
+                if (!s) return [];
+                if (s.startsWith("[") || s.startsWith("{")) {
+                    const parsed = JSON.parse(s);
+                    const arr = Array.isArray(parsed) ? parsed : Array.isArray(parsed.questions) ? parsed.questions : [parsed];
+                    return arr.map((item, i) => normalizeRow(item, i, defaultSet)).filter(Boolean);
+                }
+                if (typeof XLSX !== "undefined" && (s.includes(",") || s.includes("\t")) && s.includes("\n")) {
+                    const wb = XLSX.read(s, { type: "string" });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+                    const mapped = rows.map((r, i) => normalizeRow(r, i, defaultSet)).filter(Boolean);
+                    if (mapped.length) return mapped;
+                }
+                return s
+                    .split(/\n\s*\n+/)
+                    .map((block, idx) => {
+                        const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+                        let qText = "",
+                            ans = "",
+                            exp = "",
+                            sub = "",
+                            top = "";
+                        lines.forEach((l) => {
+                            if (/^q[:.)-]\s*/i.test(l)) qText = l.replace(/^q[:.)-]\s*/i, "").trim();
+                            else if (/^a[:.)-]\s*/i.test(l)) ans = l.replace(/^a[:.)-]\s*/i, "").trim();
+                            else if (/^(explain|note|exp)[:.)-]\s*/i.test(l)) exp = l.replace(/^(explain|note|exp)[:.)-]\s*/i, "").trim();
+                            else if (/^subject[:.)-]\s*/i.test(l)) sub = l.replace(/^subject[:.)-]\s*/i, "").trim();
+                            else if (/^topic[:.)-]\s*/i.test(l)) top = l.replace(/^topic[:.)-]\s*/i, "").trim();
+                            else if (!qText) qText = l;
+                            else if (!ans) ans = l;
+                        });
+                        if (!qText || !ans) return null;
+                        return normalizeRow(
+                            { id: `txt_${idx}_${uid()}`, text: qText, answer: ans, explain: exp, subject: sub, topic: top },
+                            idx,
+                            defaultSet
+                        );
+                    })
+                    .filter(Boolean);
+            }
+
+            async function extractItemsFromFile(file, defaultSet = "") {
+                const setLabel = inferSetNameFromFile(file, defaultSet);
+                const name = file.name.toLowerCase();
+                if (name.endsWith(".xlsx") || name.endsWith(".xls") || name.endsWith(".ods")) {
+                    if (typeof XLSX === "undefined") throw new Error("SheetJS library not available");
+                    const buf = await file.arrayBuffer();
+                    const wb = XLSX.read(buf, { type: "array" });
+                    const items = [];
+                    wb.SheetNames.forEach((sheetName) => {
+                        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
+                        rows.forEach((r, i) => {
+                            const normItem = normalizeRow(r, i, setLabel);
+                            if (normItem) items.push(normItem);
+                        });
+                    });
+                    return items;
+                }
+                const txt = await file.text();
+                return parseTextBlock(txt, setLabel);
+            }
+
+            async function handleFile(file) {
+                if (!file) return;
+                try {
+                    I = await extractItemsFromFile(file);
+                    toast(`Parsed ${I?.length || 0} question(s) from ${file.name}`);
+                    imp();
+                } catch (e) {
+                    toast("Could not parse file: " + (e.message || "invalid format"));
+                }
+            }
+
+            async function collectDroppedFiles(dataTransfer) {
+                const items = [...(dataTransfer?.items || [])];
+                const entries = items
+                    .map((it) => (typeof it.webkitGetAsEntry === "function" ? it.webkitGetAsEntry() : null))
+                    .filter(Boolean);
+
+                if (!entries.length) {
+                    return [...(dataTransfer?.files || [])];
+                }
+
+                const collected = [];
+                async function walkEntry(entry, prefix = "") {
+                    if (!entry) return;
+                    if (entry.isFile) {
+                        const f = await new Promise((resolve) => entry.file(resolve, () => resolve(null)));
+                        if (f) {
+                            const relPath = prefix ? `${prefix}/${f.name}` : f.name;
+                            try {
+                                Object.defineProperty(f, "webkitRelativePath", {
+                                    value: relPath,
+                                    configurable: true,
+                                });
+                            } catch (e) {}
+                            collected.push(f);
+                        }
+                    } else if (entry.isDirectory) {
+                        const reader = entry.createReader();
+                        let batch = [];
+                        do {
+                            batch = await new Promise((resolve) => reader.readEntries(resolve, () => resolve([])));
+                            for (const child of batch) {
+                                await walkEntry(child, prefix ? `${prefix}/${entry.name}` : entry.name);
+                            }
+                        } while (batch.length > 0);
+                    }
+                }
+
+                for (const ent of entries) {
+                    await walkEntry(ent, "");
+                }
+                return collected;
+            }
+
+            async function handleFolderFiles(fileList) {
+                const files = [...(fileList || [])].filter((f) => isSupportedQuestionFile(f.name));
+                if (!files.length) {
+                    return toast("No supported question files found in folder (.csv, .xlsx, .json, .txt)");
+                }
+                const rootFolder = (files[0].webkitRelativePath || "").split("/")[0] || "Selected folder";
+                let allItems = [];
+                let parsedFiles = 0;
+
+                for (let i = 0; i < files.length; i++) {
+                    try {
+                        const items = await extractItemsFromFile(files[i]);
+                        if (items.length) {
+                            allItems = allItems.concat(items);
+                            parsedFiles++;
+                        }
+                    } catch (e) {}
+                }
+
+                I = allItems;
+                toast(`Found ${allItems.length} question(s) across ${parsedFiles}/${files.length} file(s) in "${rootFolder}"`);
+                imp();
+            }
+
+            function imp() {
+                const preview = Array.isArray(I) ? I : null;
+                app.innerHTML = `<h2>Import questions</h2>
+                    <p class="sub">Import CSV, Excel (.xlsx/.xls), JSON, or pasted Q&amp;A text into your local question bank—or pick a folder on your laptop.</p>
+                    <div class="drop" id="drop">
+                        <p>Drop files or a folder here, <label class="f" style="display:inline"><span style="color:var(--acc);text-decoration:underline;cursor:pointer">choose a file</span><input id="file_in" type="file" accept=".csv,.tsv,.xlsx,.xls,.ods,.json,.txt" style="display:none"></label> or <label class="f" style="display:inline"><span style="color:var(--acc);text-decoration:underline;cursor:pointer">choose a folder</span><input id="dir_in" type="file" webkitdirectory directory multiple style="display:none"></label></p>
+                        <small>Columns: subject, board, topic, subtopic, difficulty, type, marks, text, options, answer, model, explain, sets · Folder files are tagged as question sets automatically</small>
+                    </div>
+                    <label class="f" style="margin-top:16px">Paste JSON, CSV, or Q:/A: blocks
+                        <textarea id="paste_in" rows="6" placeholder="Q: What is Newton's second law equation?&#10;A: F = ma&#10;Subject: Physics&#10;Topic: Forces"></textarea>
+                    </label>
+                    <div class="row">
+                        <button class="ghost" id="parse_btn">Preview pasted text</button>
+                        <button class="ghost" id="sync_folder_btn">Sync question-sets/ folder</button>
+                        <button class="ghost" id="sample_btn">Load GCSE sample pack</button>
+                    </div>
+                    ${
+                        preview
+                            ? `<h3>Preview (${preview.length} question${preview.length === 1 ? "" : "s"})</h3>
+                               <div class="row"><button class="pri" id="commit_btn">Import ${preview.length} question(s)</button><button class="ghost" id="clear_prev">Clear</button></div>
+                               <table>
+                                   <thead><tr><th>Subject</th><th>Set</th><th>Prompt</th><th>Answer</th></tr></thead>
+                                   <tbody>
+                                       ${preview
+                                           .slice(0, 25)
+                                           .map(
+                                               (item) => `<tr>
+                                                   <td>${esc(item.subject || "—")}</td>
+                                                   <td>${esc((item.sets || []).join(", ") || "—")}</td>
+                                                   <td>${esc(item.text)}</td>
+                                                   <td>${esc(String(item.answer || "").split("|")[0])}</td>
+                                               </tr>`
+                                           )
+                                           .join("")}
+                                   </tbody>
+                               </table>`
+                            : ""
+                    }`;
+
+                const drop = $("#drop");
+                const fi = $("#file_in");
+                const di = $("#dir_in");
+                drop.ondragover = (e) => {
+                    e.preventDefault();
+                    drop.classList.add("over");
+                };
+                drop.ondragleave = () => drop.classList.remove("over");
+                drop.ondrop = async (e) => {
+                    e.preventDefault();
+                    drop.classList.remove("over");
+                    const droppedFiles = await collectDroppedFiles(e.dataTransfer);
+                    if (!droppedFiles.length) return;
+                    const hasFolder = droppedFiles.some((f) => (f.webkitRelativePath || "").includes("/"));
+                    if (hasFolder || droppedFiles.length > 1) {
+                        await handleFolderFiles(droppedFiles);
+                    } else {
+                        await handleFile(droppedFiles[0]);
+                    }
+                };
+                fi.onchange = () => {
+                    if (fi.files?.[0]) handleFile(fi.files[0]);
+                };
+                di.onchange = () => {
+                    if (di.files?.length) handleFolderFiles(di.files);
+                };
+
+                $("#parse_btn").onclick = () => {
+                    try {
+                        const items = parseTextBlock($("#paste_in").value);
+                        if (!items.length) return toast("No valid questions found");
+                        I = items;
+                        toast(`Parsed ${items.length} question(s)`);
+                        imp();
+                    } catch (e) {
+                        toast("Parse error: " + (e.message || "invalid text"));
+                    }
+                };
+
+                $("#sample_btn").onclick = loadSamplePack;
+                const sfb = $("#sync_folder_btn");
+                if (sfb) sfb.onclick = async () => {
+                    await syncQuestionSetsFromFolder(false);
+                    route();
+                };
+
+                const cb = $("#commit_btn");
+                if (cb)
+                    cb.onclick = () => {
+                        Q = [...preview, ...Q];
+                        saveQ();
+                        I = null;
+                        toast(`Imported ${preview.length} questions`);
+                        go("library");
+                    };
+                const cp = $("#clear_prev");
+                if (cp)
+                    cp.onclick = () => {
+                        I = null;
+                        imp();
+                    };
+            }
+
+            /* ---------- stats ---------- */
+            function stats() {
+                const totalAtt = S.att.length;
+                const okAtt = S.att.filter((a) => a.ok).length;
+                const bySub = {};
+                S.att.forEach((a) => {
+                    const key = a.subject || "General";
+                    bySub[key] ??= { ok: 0, n: 0 };
+                    bySub[key].n++;
+                    if (a.ok) bySub[key].ok++;
+                });
+
+                const byTop = {};
+                S.att.forEach((a) => {
+                    const key = a.topic || "General";
+                    byTop[key] ??= { ok: 0, n: 0 };
+                    byTop[key].n++;
+                    if (a.ok) byTop[key].ok++;
+                });
+
+                const renderBars = (map) => {
+                    const entries = Object.entries(map).sort((a, b) => pct(a[1].ok, a[1].n) - pct(b[1].ok, b[1].n));
+                    if (!entries.length) return `<p class="meta">No attempt data yet.</p>`;
+                    return entries
+                        .map(([label, d]) => {
+                            const p = pct(d.ok, d.n);
+                            return `<div class="bar2"><span>${esc(label)}</span><i><s style="width:${p}%"></s></i><small>${p}% (${d.ok}/${d.n})</small></div>`;
+                        })
+                        .join("");
+                };
+
+                app.innerHTML = `<h2>My stats</h2>
+                    <div class="stat">
+                        <div><b>${(S.best || 0) * 10} m</b><small>deepest dive</small></div>
+                        <div><b>${S.dives.length}</b><small>dives</small></div>
+                        <div><b>${totalAtt}</b><small>answered</small></div>
+                        <div><b>${pct(okAtt, totalAtt)}%</b><small>accuracy</small></div>
+                    </div>
+                    <h3>By subject</h3>
+                    ${renderBars(bySub)}
+                    <h3>By topic</h3>
+                    ${renderBars(byTop)}
+                    <h3>Recent dives</h3>
+                    ${
+                        S.dives.length
+                            ? `<table>
+                                   <thead><tr><th>Date</th><th>Tier</th><th>Depth</th><th>Accuracy</th></tr></thead>
+                                   <tbody>
+                                       ${S.dives
+                                           .slice(0, 15)
+                                           .map(
+                                               (d) => `<tr>
+                                                   <td>${esc(new Date(d.ts).toLocaleDateString("en-GB", { day: "numeric", month: "short" }))}</td>
+                                                   <td>${esc(d.tier)}</td>
+                                                   <td>${d.depth} m</td>
+                                                   <td>${d.acc}%</td>
+                                               </tr>`
+                                           )
+                                           .join("")}
+                                   </tbody>
+                               </table>`
+                            : `<p class="meta">No completed dives yet.</p>`
+                    }
+                    <div class="row" style="margin-top:28px">
+                        <button class="ghost" id="reset_stats">Reset stats</button>
+                    </div>`;
+
+                $("#reset_stats").onclick = async () => {
+                    const ok = await modal("<p>Reset all dive history, personal best, and attempt stats?</p>");
+                    if (!ok) return;
+                    S = { att: [], dives: [], best: 0 };
+                    saveS();
+                    toast("Stats reset");
+                    stats();
+                };
+            }
+
+            // Boot router + sync CSV question sets from question-sets/ folder
+            route();
+            syncQuestionSetsFromFolder(true).then((count) => {
+                if (count > 0) route();
+            });
+        </script>
+    </body>
+</html>
