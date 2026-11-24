@@ -1,0 +1,18 @@
+{
+  "banks": [
+    {
+      "name": "Christian Beliefs",
+      "file": "christian-beliefs.csv",
+      "subject": "Religious Studies",
+      "examBoard": "AQA",
+      "specification": "8062"
+    },
+    {
+      "name": "Islamic Beliefs",
+      "file": "islamic-beliefs.csv",
+      "subject": "Religious Studies",
+      "examBoard": "AQA",
+      "specification": "8062"
+    }
+  ]
+}
